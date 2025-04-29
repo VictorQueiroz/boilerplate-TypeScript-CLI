@@ -13,8 +13,13 @@
     "lint": "npx prettier --write bin",
     "prepublishOnly": "npm run lint && npx tsc -b bin --force"
   },
+  "files": [
+    "bin/**/*.js",
+    "bin/**/*.ts",
+    "bin/**/*.map"
+  ],
   "bin": {
-    "audiomaking-dataset": "./bin/audiomaking-dataset.js"
+    "audiomaking-dataset": "./bin/index.js"
   },
   "dependencies": {
     "@high-nodejs/child_process": "^0.3.4",
