@@ -7,7 +7,7 @@
     "tsx": "^4.19.3",
     "typescript": "^5.8.3"
   },
-  "version": "0.0.2",
+  "version": "0.0.3",
   "name": "@audiomaking/dataset-builder",
   "scripts": {
     "lint": "npx prettier --write bin",
