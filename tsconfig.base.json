@@ -2,10 +2,8 @@
   "compilerOptions": {
     "composite": true,
     "incremental": true,
-
     // No types unless explicitly stated
     "types": [],
-
     // Type Checking
     "strict": true,
     "noImplicitAny": true,
@@ -27,10 +25,15 @@
     "noPropertyAccessFromIndexSignature": true,
     "allowUnusedLabels": true,
     "allowUnreachableCode": true,
-    "noImplicitUseStrict": true,
-
     // Source Maps
     "sourceMap": true,
     "declarationMap": true,
+    // Library information
+    "lib": [
+      "ESNext"
+    ],
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "node16"
   }
 }
