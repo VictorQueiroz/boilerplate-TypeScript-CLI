@@ -29,10 +29,8 @@
     "sourceMap": true,
     "declarationMap": true,
     // Library information
-    "lib": [
-      "ESNext"
-    ],
-    "module": "ESNext",
+    "lib": ["ESNext"],
+    "module": "Node16",
     "target": "ESNext",
     "moduleResolution": "node16"
   }

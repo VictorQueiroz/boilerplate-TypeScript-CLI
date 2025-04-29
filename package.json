@@ -7,7 +7,12 @@
     "tsx": "^4.19.3",
     "typescript": "^5.8.3"
   },
+  "version": "0.0.1",
   "name": "@audiomaking/dataset-builder",
+  "scripts": {
+    "lint": "npx prettier --write bin",
+    "prepublishOnly": "npm run lint && npx tsc -b bin --force"
+  },
   "bin": {
     "audiomaking-dataset": "./bin/audiomaking-dataset.js"
   },
