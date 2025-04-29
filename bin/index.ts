@@ -1,87 +1,13 @@
 #!/usr/bin/env node
 
-import { CreateResultFn } from 'cli-argument-helper/assignmentValueFromIndex';
 import getArgumentAssignment from 'cli-argument-helper/getArgumentAssignment';
 import { getInteger } from 'cli-argument-helper/number';
 import { getString } from 'cli-argument-helper/string';
 import assert from 'node:assert';
 import * as console from 'node:console';
 import path from 'node:path';
+import getArgumentAssignmentList from './getArgumentAssignmentList';
 import sha1sum from './sha1sum';
-
-// TODO: Move this to cli-argument-helper library
-function getArgumentAssignmentList<T>(
-  args: string[],
-  name: string[] | string,
-  getValue: CreateResultFn<T>
-): T[] | null {
-  const list = new Array<T>();
-
-  let value: T | null;
-  for (const arg of Array.isArray(name) ? name : [name]) {
-    do {
-      value = getArgumentAssignment(args, arg, getValue);
-
-      if (value === null) {
-        continue;
-      }
-
-      list.push(value);
-    } while (value !== null);
-  }
-
-  if (list.length === 0) {
-    return null;
-  }
-
-  return list;
-}
-
-enum FFmpegAudioFormat {
-  F32_LE = 'f32le',
-  F64_LE = 'f64le',
-  F32_BE = 'f32be',
-  F64_BE = 'f64be',
-  S16_LE = 's16le',
-  S32_LE = 's32le',
-  S16_BE = 's16be',
-  S32_BE = 's32be'
-}
-
-function getFFmpegAudioFormat(
-  args: string[]
-): FFmpegAudioFormat[] | null {
-  const value = getArgumentAssignmentList(
-    args,
-    ['--format', '-f', '-fmt'],
-    getString
-  );
-  if (value === null) {
-    return null;
-  }
-
-  const formats = new Array<FFmpegAudioFormat>();
-
-  for (const item of value) {
-    switch (item) {
-      case FFmpegAudioFormat.F32_LE:
-      case FFmpegAudioFormat.F64_LE:
-      case FFmpegAudioFormat.F32_BE:
-      case FFmpegAudioFormat.F64_BE:
-      case FFmpegAudioFormat.S16_LE:
-      case FFmpegAudioFormat.S32_LE:
-      case FFmpegAudioFormat.S16_BE:
-      case FFmpegAudioFormat.S32_BE:
-        formats.push(item);
-        break;
-      default:
-        console.error(`Unknown audio format: ${item}`);
-        return null;
-    }
-  }
-
-  return formats;
-}
 
 (async () => {
   const args = process.argv.slice(2);
@@ -108,12 +34,13 @@ function getFFmpegAudioFormat(
   const input = getArgumentAssignment(args, '--input', getString);
   assert.strict.ok(input !== null, `--input is required`);
 
-  let outDir = getArgumentAssignment(
-    args,
-    '--output-directory',
-    getString
+  let outDir =
+    getArgumentAssignment(args, '--output-directory', getString) ??
+    getArgumentAssignment(args, '-o', getString);
+  assert.strict.ok(
+    outDir !== null,
+    `--output-directory, -o is required`
   );
-  assert.strict.ok(outDir !== null, `--output-directory is required`);
 
   // FIXME: We will implement outputting raw data from a file in the future
   // const rawData = getArgument(args, '-');
@@ -168,83 +95,88 @@ function getFFmpegAudioFormat(
   const { spawn } = await import('@high-nodejs/child_process');
   const fs = await import('node:fs');
 
-  const ffmpegAudioOutputFormats =
-    getArgumentAssignmentList(
-      args,
-      ['--format'],
-      getFFmpegAudioFormat
-    )?.flat() ?? null;
-  assert.strict.ok(
-    ffmpegAudioOutputFormats !== null,
-    `--format is required`
-  );
+  // const ffmpegAudioOutputFormats =
+  //   getArgumentAssignmentList(
+  //     args,
+  //     ['--format'],
+  //     getFFmpegAudioFormat
+  //   )?.flat() ?? null;
+  // assert.strict.ok(
+  //   ffmpegAudioOutputFormats !== null,
+  //   `--format is required`
+  // );
+
+  const format = getArgumentAssignment(args, '--format', getString);
 
   for (const channelCount of channelCountList) {
-    for (const outputFormat of ffmpegAudioOutputFormats) {
-      for (const sampleRate of sampleRateList) {
-        for (const bitrate of bitrateList) {
-          const leadingSlices = [
-            `ba-${bitrate}`,
-            `ar-${sampleRate}`,
-            `cc_${channelCount}`
-          ];
+    // for (const outputFormat of ffmpegAudioOutputFormats) {
 
-          if (outputFormat !== null) {
-            leadingSlices.push(`fmt-${outputFormat}`);
-          }
+    // }
+    for (const sampleRate of sampleRateList) {
+      for (const bitrate of bitrateList) {
+        const leadingSlices = [
+          `ba-${bitrate}`,
+          `ar-${sampleRate}`,
+          `cc_${channelCount}`
+        ];
 
-          leadingSlices.push(
-            `ac_${audioCodec}`,
-            `sha1sum_${inputFileHash}`
-          );
+        // if (outputFormat !== null) {
+        //   leadingSlices.push(`fmt-${outputFormat}`);
+        // }
 
-          const outputFile = path.resolve(
-            outDir,
-            `${leadingSlices.join('-')}.${outExtension}`
-          );
-          const hashOutputFile = `${outputFile}.sha1sum`;
+        leadingSlices.push(
+          `ac_${audioCodec}`,
+          `sha1sum_${inputFileHash}`
+        );
 
-          try {
-            await fs.promises.access(
-              hashOutputFile,
-              fs.constants.R_OK
-            );
-            console.log(
-              `Skipping "${input}" because it already exists: "${outputFile}" (${outputFile}.sha1sum).`
-            );
-          } catch (reason) {
-            console.log(
-              `Converting "${input}" to "${outputFile}", "${outputFile}.sha1sum" does not exist.`
-            );
-          }
+        const ffmpegArgs = [
+          '-i',
+          input,
+          // Channels
+          '-ac',
+          `${channelCount}`,
+          // Sample rate
+          '-ar',
+          `${sampleRate}`,
+          // Audio bitrate
+          '-b:a',
+          bitrate,
+          // Audio codec
+          '-c:a',
+          audioCodec
+        ];
 
-          const ffmpegArgs = [
-            '-i',
-            input,
-            '-acodec',
-            audioCodec,
-            // Channels
-            '-ac',
-            `${channelCount}`,
-            // Sample rate
-            '-ar',
-            `${sampleRate}`,
-            // Audio bitrate
-            '-b:a',
-            bitrate,
-            // Audio codec
-            '-c:a',
-            audioCodec,
-            '-f',
-            outputFormat,
-            // Audio output file
-            outputFile
-          ];
-
-          await spawn('ffmpeg', ffmpegArgs).wait();
-
-          await fs.promises.writeFile(hashOutputFile, inputFileHash);
+        if (format !== null) {
+          ffmpegArgs.push('-f', format);
+          leadingSlices.push(`fmt-${format}`);
         }
+
+        const outputFile = path.resolve(
+          outDir,
+          `${leadingSlices.join('_')}.${outExtension}`
+        );
+        const hashOutputFile = `${outputFile}.sha1sum`;
+
+        try {
+          await fs.promises.access(hashOutputFile, fs.constants.R_OK);
+          console.log(
+            `Skipping "${input}" because it already exists: "${outputFile}" (${hashOutputFile}).`
+          );
+          continue;
+        } catch (reason) {
+          console.log(
+            `Converting "${input}" to "${outputFile}", "${hashOutputFile}" does not exist.`
+          );
+        }
+
+        await spawn('ffmpeg', [
+          ...ffmpegArgs,
+
+          // Audio output file
+          outputFile
+        ]).wait();
+
+        await fs.promises.writeFile(hashOutputFile, inputFileHash);
       }
     }
   }
