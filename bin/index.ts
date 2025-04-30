@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { getArgument } from 'cli-argument-helper';
 import getArgumentAssignment from 'cli-argument-helper/getArgumentAssignment';
 import { getInteger } from 'cli-argument-helper/number';
 import { getString } from 'cli-argument-helper/string';
@@ -57,7 +58,7 @@ import sha1sum from './sha1sum';
   const inputFileHash = await sha1sum(input);
 
   // FIXME: This might have interesting functionality
-  // const outExtension = (getArgumentAssignmentList(args, '--extension', getString) ??
+  // onst outExtension = (getArgumentAssignmentList(args, '--extension', getString) ??
   //   getArgumentAssignmentList(args, '-e', getString));
   // assert.strict.ok(outExtension !== null && outExtension.length > 0, `--extension, -e is required`);
 
@@ -95,18 +96,35 @@ import sha1sum from './sha1sum';
   const { spawn } = await import('@high-nodejs/child_process');
   const fs = await import('node:fs');
 
-  // const ffmpegAudioOutputFormats =
-  //   getArgumentAssignmentList(
-  //     args,
-  //     ['--format'],
-  //     getFFmpegAudioFormat
-  //   )?.flat() ?? null;
-  // assert.strict.ok(
-  //   ffmpegAudioOutputFormats !== null,
-  //   `--format is required`
-  // );
-
   const format = getArgumentAssignment(args, '--format', getString);
+
+  /*
+  ffprobe -v error -analyzeduration 1000000 -probesize 1000000 -select_streams a -show_entries stream=codec_type -of csv=p=0
+  */
+
+  try {
+    await spawn.wait('ffprobe', [
+      '-v',
+      'error',
+      '-analyzeduration',
+      '1000000',
+      '-probesize',
+      '1000000',
+      '-select_streams',
+      'a',
+      '-show_entries',
+      'stream=codec_type',
+      '-of',
+      'csv=p=0',
+      input
+    ]);
+  } catch (reason) {
+    console.error('ffprobe failed: %o', reason);
+    if (getArgument(args, '--fail') !== null) {
+      process.exitCode = 1;
+    }
+    return;
+  }
 
   for (const channelCount of channelCountList) {
     // for (const outputFormat of ffmpegAudioOutputFormats) {
