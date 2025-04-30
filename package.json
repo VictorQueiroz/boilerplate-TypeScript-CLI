@@ -11,6 +11,7 @@
   "name": "@audiomaking/dataset-builder",
   "scripts": {
     "lint": "npx prettier --write bin",
+    "generate:schema": "npx jsbuffer main.jsb -o schema --extends tsconfig.base.json",
     "prepublishOnly": "npm run lint && npx tsc -b bin --force"
   },
   "files": [
@@ -23,6 +24,8 @@
   },
   "dependencies": {
     "@high-nodejs/child_process": "^0.3.4",
-    "cli-argument-helper": "^2.3.0"
+    "@jsbuffer/codec": "^1.0.7",
+    "cli-argument-helper": "^2.3.0",
+    "jsbuffer": "^2.0.12"
   }
 }
