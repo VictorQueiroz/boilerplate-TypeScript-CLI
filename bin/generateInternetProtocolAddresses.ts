@@ -166,6 +166,10 @@ export default async function generateInternetProtocolAddresses(options: {
             buffer.subarray(startOffset, endOffset)
           );
 
+          if (existingIp.trim().length === 0) {
+            continue;
+          }
+
           totalInternetProtocolAddressCount++;
 
           await deduplicateInternetProtocolAddress(
