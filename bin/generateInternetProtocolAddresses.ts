@@ -118,6 +118,8 @@ export default async function generateInternetProtocolAddresses(options: {
 
         let result: fs.promises.FileReadResult<Uint8Array>;
 
+        let totalInternetProtocolAddressCount = 0;
+
         do {
           result = await fd.read(
             buffer,
@@ -127,6 +129,7 @@ export default async function generateInternetProtocolAddresses(options: {
           );
 
           if (result.bytesRead < 1) {
+            console.log('EOF');
             continue;
           }
 
@@ -158,9 +161,12 @@ export default async function generateInternetProtocolAddresses(options: {
           // Skip the amount we have read so far
           readOffset += localBufferByteOffset;
 
+          // TODO: Check if it's a valid IP. If not, abort it, skip it, correct it, remove it, or ask the user which of those options he wants.
           const existingIp = textDecoder.decode(
             buffer.subarray(startOffset, endOffset)
           );
+
+          totalInternetProtocolAddressCount++;
 
           await deduplicateInternetProtocolAddress(
             existingIp,
@@ -235,6 +241,11 @@ export default async function generateInternetProtocolAddresses(options: {
           ipList.length,
           ipList.map(ip => ip.join('.')).join(', ')
         );
+        console.log()
+
+        console.log('Read %d IP addresses', totalInternetProtocolAddressCount);
+
+        totalInternetProtocolAddressCount = 0;
       }
     }
   }
