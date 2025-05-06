@@ -25,7 +25,11 @@
   "dependencies": {
     "@high-nodejs/child_process": "^0.3.4",
     "@jsbuffer/codec": "^1.0.7",
+    "chalk": "^5.4.1",
+    "cheerio": "^1.0.0",
     "cli-argument-helper": "^2.3.0",
+    "filesize": "^10.1.6",
+    "glob": "^11.0.2",
     "jsbuffer": "^2.0.12"
   }
 }

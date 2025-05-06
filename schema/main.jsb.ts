@@ -1,52 +1,144 @@
+import JSBI from "jsbi";
 import { ISerializer } from "./__types__";
 import { IDeserializer } from "./__types__";
-import JSBI from "jsbi";
-export type FFmpegOriginalFileResult = Readonly<FFmpegOriginalFileResultSuccess> | Readonly<FFmpegOriginalFileResultFailure> | Readonly<FFmpegOriginalFileResultUnknown> | Readonly<FFmpegOriginalFileResultCorrupted>;
-export function isFFmpegOriginalFileResultTrait(value: unknown): value is FFmpegOriginalFileResult {
-    if(isFFmpegOriginalFileResultSuccess(value)) return true;
-    if(isFFmpegOriginalFileResultFailure(value)) return true;
-    if(isFFmpegOriginalFileResultUnknown(value)) return true;
-    if(isFFmpegOriginalFileResultCorrupted(value)) return true;
+export interface IPReadingInformation  {
+    _name: 'main.IPReadingInformation';
+    byteOffset: number;
+    lastTarget: Readonly<TestURL> | null;
+}
+export function isIPReadingInformation(value: unknown): value is IPReadingInformation {
+    if(!(typeof value === 'object' && value !== null && '_name' in value && typeof value['_name'] === 'string' && value['_name'] === "main.IPReadingInformation")) return false;
+    if(!(
+        "byteOffset" in value && ((__v0) => (typeof __v0 === 'number' && JSBI.equal(JSBI.BigInt(__v0),JSBI.BigInt(__v0)) && JSBI.greaterThanOrEqual(JSBI.BigInt(__v0),JSBI.BigInt("0")) && JSBI.lessThanOrEqual(JSBI.BigInt(__v0),JSBI.BigInt("4294967295"))))(value['byteOffset'])
+    )) return false;
+    if(!(
+        "lastTarget" in value && ((__v1) => (__v1 === null ? true : ((x) => (isTestURL(x)))(__v1)))(value['lastTarget'])
+    )) return false;
+    return true;
+}
+export interface IPReadingInformationInputParams {
+    byteOffset: number;
+    lastTarget: Readonly<TestURL> | null;
+}
+export function IPReadingInformation(params: IPReadingInformationInputParams): IPReadingInformation {
+    return {
+        _name: 'main.IPReadingInformation',
+        byteOffset: params['byteOffset'],
+        lastTarget: params['lastTarget']
+    };
+}
+export function encodeIPReadingInformation(__s: ISerializer, value: IPReadingInformation) {
+    __s.writeInt32(1632794263);
+    /**
+     * encoding param: byteOffset
+     */
+    const __pv0 = value['byteOffset'];
+    __s.writeUint32(__pv0);
+    /**
+     * encoding param: lastTarget
+     */
+    const __pv1 = value['lastTarget'];
+    if(__pv1 === null) {
+        __s.writeUint8(0);
+    } else {
+        __s.writeUint8(1);
+        encodeTestURL(__s,__pv1);
+    }
+}
+export function decodeIPReadingInformation(__d: IDeserializer): IPReadingInformation | null {
+    const __id = __d.readInt32();
+    /**
+     * decode header
+     */
+    if(__id !== 1632794263) return null;
+    let byteOffset: number;
+    let lastTarget: TestURL | null;
+    /**
+     * decoding param: byteOffset
+     */
+    byteOffset = __d.readUint32();
+    /**
+     * decoding param: lastTarget
+     */
+    if(__d.readUint8() === 1) {
+        const __tmp3 = decodeTestURL(__d);
+        if(__tmp3 === null) return null;
+        lastTarget = __tmp3;
+    } else {
+        lastTarget = null;
+    }
+    return {
+        _name: 'main.IPReadingInformation',
+        byteOffset,
+        lastTarget
+    };
+}
+export function defaultIPReadingInformation(params: Partial<IPReadingInformationInputParams> = {}): IPReadingInformation {
+    return IPReadingInformation({
+        byteOffset: 0,
+        lastTarget: null,
+        ...params
+    });
+}
+export function compareIPReadingInformation(__a: IPReadingInformation, __b: IPReadingInformation): boolean {
+    return (
+        /**
+         * compare parameter byteOffset
+         */
+        __a['byteOffset'] === __b['byteOffset'] &&
+        /**
+         * compare parameter lastTarget
+         */
+        ((__dp11, __dp12) => __dp11 !== null && __dp12 !== null ? compareTestURL(__dp11,__dp12) : __dp11 === __dp12)(__a['lastTarget'],__b['lastTarget'])
+    );
+}
+export function updateIPReadingInformation(value: IPReadingInformation, changes: Partial<IPReadingInformationInputParams>) {
+    if(typeof changes['byteOffset'] !== 'undefined') {
+        if(!(changes['byteOffset'] === value['byteOffset'])) {
+            value = IPReadingInformation({
+                ...value,
+                byteOffset: changes['byteOffset'],
+            });
+        }
+    }
+    if(typeof changes['lastTarget'] !== 'undefined') {
+        if(!(((__dp21, __dp22) => __dp21 !== null && __dp22 !== null ? compareTestURL(__dp21,__dp22) : __dp21 === __dp22)(changes['lastTarget'],value['lastTarget']))) {
+            value = IPReadingInformation({
+                ...value,
+                lastTarget: changes['lastTarget'],
+            });
+        }
+    }
+    return value;
+}
+export type IPTestingResult = Readonly<IPTestingResultSuccess> | Readonly<IPTestingResultFailure>;
+export function isIPTestingResultTrait(value: unknown): value is IPTestingResult {
+    if(isIPTestingResultSuccess(value)) return true;
+    if(isIPTestingResultFailure(value)) return true;
     return false;
 }
-export function encodeFFmpegOriginalFileResultTrait(__s: ISerializer,value: FFmpegOriginalFileResult) {
+export function encodeIPTestingResultTrait(__s: ISerializer,value: IPTestingResult) {
     switch(value._name) {
-        case 'main.FFmpegOriginalFileResultSuccess':
-            return encodeFFmpegOriginalFileResultSuccess(__s,value);
-        case 'main.FFmpegOriginalFileResultFailure':
-            return encodeFFmpegOriginalFileResultFailure(__s,value);
-        case 'main.FFmpegOriginalFileResultUnknown':
-            return encodeFFmpegOriginalFileResultUnknown(__s,value);
-        case 'main.FFmpegOriginalFileResultCorrupted':
-            return encodeFFmpegOriginalFileResultCorrupted(__s,value);
+        case 'main.IPTestingResultSuccess':
+            return encodeIPTestingResultSuccess(__s,value);
+        case 'main.IPTestingResultFailure':
+            return encodeIPTestingResultFailure(__s,value);
     }
-    throw new Error(`Failed to encode: Received invalid value on "_name" property. We got "${value['_name']}" value, but this function was expecting to receive one of the following:\n\t- main.FFmpegOriginalFileResultSuccess\n\t- main.FFmpegOriginalFileResultFailure\n\t- main.FFmpegOriginalFileResultUnknown\n\t- main.FFmpegOriginalFileResultCorrupted\n\n\nPossible cause is that maybe this type simply does not extend this trait, and somehow the type-checking prevented you from calling this function wrongly.`);
+    throw new Error(`Failed to encode: Received invalid value on "_name" property. We got "${value['_name']}" value, but this function was expecting to receive one of the following:\n\t- main.IPTestingResultSuccess\n\t- main.IPTestingResultFailure\n\n\nPossible cause is that maybe this type simply does not extend this trait, and somehow the type-checking prevented you from calling this function wrongly.`);
 }
-export function decodeFFmpegOriginalFileResultTrait(__d: IDeserializer) {
+export function decodeIPTestingResultTrait(__d: IDeserializer) {
     const __id = __d.readInt32();
     __d.rewind(4);
-    let value: FFmpegOriginalFileResultSuccess | FFmpegOriginalFileResultFailure | FFmpegOriginalFileResultUnknown | FFmpegOriginalFileResultCorrupted;
+    let value: IPTestingResultSuccess | IPTestingResultFailure;
     switch(__id) {
-        case -1340213219: {
-            const tmp = decodeFFmpegOriginalFileResultSuccess(__d);
+        case 1167151156: {
+            const tmp = decodeIPTestingResultSuccess(__d);
             if(tmp === null) return null;
             value = tmp;
             break;
         }
-        case 265592019: {
-            const tmp = decodeFFmpegOriginalFileResultFailure(__d);
-            if(tmp === null) return null;
-            value = tmp;
-            break;
-        }
-        case -1787151053: {
-            const tmp = decodeFFmpegOriginalFileResultUnknown(__d);
-            if(tmp === null) return null;
-            value = tmp;
-            break;
-        }
-        case -577838057: {
-            const tmp = decodeFFmpegOriginalFileResultCorrupted(__d);
+        case -154464973: {
+            const tmp = decodeIPTestingResultFailure(__d);
             if(tmp === null) return null;
             value = tmp;
             break;
@@ -55,955 +147,1036 @@ export function decodeFFmpegOriginalFileResultTrait(__d: IDeserializer) {
     }
     return value;
 }
-export function defaultFFmpegOriginalFileResultTrait() {
-    return defaultFFmpegOriginalFileResultSuccess();
+export function defaultIPTestingResultTrait() {
+    return defaultIPTestingResultSuccess();
 }
-export function compareFFmpegOriginalFileResultTrait(__a: FFmpegOriginalFileResult, __b: FFmpegOriginalFileResult) {
+export function compareIPTestingResultTrait(__a: IPTestingResult, __b: IPTestingResult) {
     switch(__a._name) {
-        case 'main.FFmpegOriginalFileResultSuccess':
-            if(__b._name !== "main.FFmpegOriginalFileResultSuccess") return false;
-            return compareFFmpegOriginalFileResultSuccess(__a,__b);
-        case 'main.FFmpegOriginalFileResultFailure':
-            if(__b._name !== "main.FFmpegOriginalFileResultFailure") return false;
-            return compareFFmpegOriginalFileResultFailure(__a,__b);
-        case 'main.FFmpegOriginalFileResultUnknown':
-            if(__b._name !== "main.FFmpegOriginalFileResultUnknown") return false;
-            return compareFFmpegOriginalFileResultUnknown(__a,__b);
-        case 'main.FFmpegOriginalFileResultCorrupted':
-            if(__b._name !== "main.FFmpegOriginalFileResultCorrupted") return false;
-            return compareFFmpegOriginalFileResultCorrupted(__a,__b);
+        case 'main.IPTestingResultSuccess':
+            if(__b._name !== "main.IPTestingResultSuccess") return false;
+            return compareIPTestingResultSuccess(__a,__b);
+        case 'main.IPTestingResultFailure':
+            if(__b._name !== "main.IPTestingResultFailure") return false;
+            return compareIPTestingResultFailure(__a,__b);
     }
 }
-export interface FFmpegOriginalFileResultSuccess  {
-    _name: 'main.FFmpegOriginalFileResultSuccess';
-    digest: Readonly<FileDigest>;
-    originalFile: string;
+export interface IPTestingResultSuccess  {
+    _name: 'main.IPTestingResultSuccess';
+    result: Readonly<IPHttpResult>;
 }
-export function isFFmpegOriginalFileResultSuccess(value: unknown): value is FFmpegOriginalFileResultSuccess {
-    if(!(typeof value === 'object' && value !== null && '_name' in value && typeof value['_name'] === 'string' && value['_name'] === "main.FFmpegOriginalFileResultSuccess")) return false;
+export function isIPTestingResultSuccess(value: unknown): value is IPTestingResultSuccess {
+    if(!(typeof value === 'object' && value !== null && '_name' in value && typeof value['_name'] === 'string' && value['_name'] === "main.IPTestingResultSuccess")) return false;
     if(!(
-        "digest" in value && ((__v0) => (isFileDigestTrait(__v0)))(value['digest'])
-    )) return false;
-    if(!(
-        "originalFile" in value && ((__v1) => (typeof __v1 === 'string'))(value['originalFile'])
+        "result" in value && ((__v0) => (isIPHttpResult(__v0)))(value['result'])
     )) return false;
     return true;
 }
-export interface FFmpegOriginalFileResultSuccessInputParams {
-    digest: Readonly<FileDigest>;
-    originalFile: string;
+export interface IPTestingResultSuccessInputParams {
+    result: Readonly<IPHttpResult>;
 }
-export function FFmpegOriginalFileResultSuccess(params: FFmpegOriginalFileResultSuccessInputParams): FFmpegOriginalFileResultSuccess {
+export function IPTestingResultSuccess(params: IPTestingResultSuccessInputParams): IPTestingResultSuccess {
     return {
-        _name: 'main.FFmpegOriginalFileResultSuccess',
-        digest: params['digest'],
-        originalFile: params['originalFile']
+        _name: 'main.IPTestingResultSuccess',
+        result: params['result']
     };
 }
-export function encodeFFmpegOriginalFileResultSuccess(__s: ISerializer, value: FFmpegOriginalFileResultSuccess) {
-    __s.writeInt32(-1340213219);
+export function encodeIPTestingResultSuccess(__s: ISerializer, value: IPTestingResultSuccess) {
+    __s.writeInt32(1167151156);
     /**
-     * encoding param: digest
+     * encoding param: result
      */
-    const __pv0 = value['digest'];
-    encodeFileDigestTrait(__s,__pv0);
-    /**
-     * encoding param: originalFile
-     */
-    const __pv1 = value['originalFile'];
-    __s.writeString(__pv1);
+    const __pv0 = value['result'];
+    encodeIPHttpResult(__s,__pv0);
 }
-export function decodeFFmpegOriginalFileResultSuccess(__d: IDeserializer): FFmpegOriginalFileResultSuccess | null {
+export function decodeIPTestingResultSuccess(__d: IDeserializer): IPTestingResultSuccess | null {
     const __id = __d.readInt32();
     /**
      * decode header
      */
-    if(__id !== -1340213219) return null;
-    let digest: FileDigest;
-    let originalFile: string;
+    if(__id !== 1167151156) return null;
+    let result: IPHttpResult;
     /**
-     * decoding param: digest
+     * decoding param: result
      */
-    const __tmp1 = decodeFileDigestTrait(__d);
+    const __tmp1 = decodeIPHttpResult(__d);
     if(__tmp1 === null) return null;
-    digest = __tmp1;
-    /**
-     * decoding param: originalFile
-     */
-    originalFile = __d.readString();
+    result = __tmp1;
     return {
-        _name: 'main.FFmpegOriginalFileResultSuccess',
-        digest,
-        originalFile
+        _name: 'main.IPTestingResultSuccess',
+        result
     };
 }
-export function defaultFFmpegOriginalFileResultSuccess(params: Partial<FFmpegOriginalFileResultSuccessInputParams> = {}): FFmpegOriginalFileResultSuccess {
-    return FFmpegOriginalFileResultSuccess({
-        digest: defaultFileDigestTrait(),
-        originalFile: "",
+export function defaultIPTestingResultSuccess(params: Partial<IPTestingResultSuccessInputParams> = {}): IPTestingResultSuccess {
+    return IPTestingResultSuccess({
+        result: defaultIPHttpResult(),
         ...params
     });
 }
-export function compareFFmpegOriginalFileResultSuccess(__a: FFmpegOriginalFileResultSuccess, __b: FFmpegOriginalFileResultSuccess): boolean {
+export function compareIPTestingResultSuccess(__a: IPTestingResultSuccess, __b: IPTestingResultSuccess): boolean {
     return (
         /**
-         * compare parameter digest
+         * compare parameter result
          */
-        compareFileDigestTrait(__a['digest'],__b['digest']) &&
-        /**
-         * compare parameter originalFile
-         */
-        __a['originalFile'] === __b['originalFile']
+        compareIPHttpResult(__a['result'],__b['result'])
     );
 }
-export function updateFFmpegOriginalFileResultSuccess(value: FFmpegOriginalFileResultSuccess, changes: Partial<FFmpegOriginalFileResultSuccessInputParams>) {
-    if(typeof changes['digest'] !== 'undefined') {
-        if(!(compareFileDigestTrait(changes['digest'],value['digest']))) {
-            value = FFmpegOriginalFileResultSuccess({
+export function updateIPTestingResultSuccess(value: IPTestingResultSuccess, changes: Partial<IPTestingResultSuccessInputParams>) {
+    if(typeof changes['result'] !== 'undefined') {
+        if(!(compareIPHttpResult(changes['result'],value['result']))) {
+            value = IPTestingResultSuccess({
                 ...value,
-                digest: changes['digest'],
-            });
-        }
-    }
-    if(typeof changes['originalFile'] !== 'undefined') {
-        if(!(changes['originalFile'] === value['originalFile'])) {
-            value = FFmpegOriginalFileResultSuccess({
-                ...value,
-                originalFile: changes['originalFile'],
+                result: changes['result'],
             });
         }
     }
     return value;
 }
-export interface FFmpegOriginalFileResultFailure  {
-    _name: 'main.FFmpegOriginalFileResultFailure';
-    digest: Readonly<FileDigest>;
-    originalFile: string;
-    details: string;
+export interface ProcessedExtractionTargetFileMetadata  {
+    _name: 'main.ProcessedExtractionTargetFileMetadata';
+    attributes: ReadonlyArray<Readonly<Attribute>>;
 }
-export function isFFmpegOriginalFileResultFailure(value: unknown): value is FFmpegOriginalFileResultFailure {
-    if(!(typeof value === 'object' && value !== null && '_name' in value && typeof value['_name'] === 'string' && value['_name'] === "main.FFmpegOriginalFileResultFailure")) return false;
+export function isProcessedExtractionTargetFileMetadata(value: unknown): value is ProcessedExtractionTargetFileMetadata {
+    if(!(typeof value === 'object' && value !== null && '_name' in value && typeof value['_name'] === 'string' && value['_name'] === "main.ProcessedExtractionTargetFileMetadata")) return false;
     if(!(
-        "digest" in value && ((__v0) => (isFileDigestTrait(__v0)))(value['digest'])
-    )) return false;
-    if(!(
-        "originalFile" in value && ((__v1) => (typeof __v1 === 'string'))(value['originalFile'])
-    )) return false;
-    if(!(
-        "details" in value && ((__v2) => (typeof __v2 === 'string'))(value['details'])
+        "attributes" in value && ((__v0) => ((Array.isArray(__v0) || __v0 instanceof Set) && Array.from(__v0).every(p => (isAttribute(p)))))(value['attributes'])
     )) return false;
     return true;
 }
-export interface FFmpegOriginalFileResultFailureInputParams {
-    digest: Readonly<FileDigest>;
-    originalFile: string;
-    details: string;
+export interface ProcessedExtractionTargetFileMetadataInputParams {
+    attributes: ReadonlyArray<Readonly<Attribute>>;
 }
-export function FFmpegOriginalFileResultFailure(params: FFmpegOriginalFileResultFailureInputParams): FFmpegOriginalFileResultFailure {
+export function ProcessedExtractionTargetFileMetadata(params: ProcessedExtractionTargetFileMetadataInputParams): ProcessedExtractionTargetFileMetadata {
     return {
-        _name: 'main.FFmpegOriginalFileResultFailure',
-        digest: params['digest'],
-        originalFile: params['originalFile'],
-        details: params['details']
+        _name: 'main.ProcessedExtractionTargetFileMetadata',
+        attributes: params['attributes']
     };
 }
-export function encodeFFmpegOriginalFileResultFailure(__s: ISerializer, value: FFmpegOriginalFileResultFailure) {
-    __s.writeInt32(265592019);
+export function encodeProcessedExtractionTargetFileMetadata(__s: ISerializer, value: ProcessedExtractionTargetFileMetadata) {
+    __s.writeInt32(-445826394);
     /**
-     * encoding param: digest
+     * encoding param: attributes
      */
-    const __pv0 = value['digest'];
-    encodeFileDigestTrait(__s,__pv0);
-    /**
-     * encoding param: originalFile
-     */
-    const __pv1 = value['originalFile'];
-    __s.writeString(__pv1);
-    /**
-     * encoding param: details
-     */
-    const __pv2 = value['details'];
-    __s.writeString(__pv2);
+    const __pv0 = value['attributes'];
+    const __l1 = __pv0.length;
+    __s.writeUint32(__l1);
+    for(const __item1 of __pv0) {
+        encodeAttribute(__s,__item1);
+    }
 }
-export function decodeFFmpegOriginalFileResultFailure(__d: IDeserializer): FFmpegOriginalFileResultFailure | null {
+export function decodeProcessedExtractionTargetFileMetadata(__d: IDeserializer): ProcessedExtractionTargetFileMetadata | null {
     const __id = __d.readInt32();
     /**
      * decode header
      */
-    if(__id !== 265592019) return null;
-    let digest: FileDigest;
-    let originalFile: string;
-    let details: string;
+    if(__id !== -445826394) return null;
+    let attributes: Array<Attribute>;
     /**
-     * decoding param: digest
+     * decoding param: attributes
      */
-    const __tmp1 = decodeFileDigestTrait(__d);
-    if(__tmp1 === null) return null;
-    digest = __tmp1;
-    /**
-     * decoding param: originalFile
-     */
-    originalFile = __d.readString();
-    /**
-     * decoding param: details
-     */
-    details = __d.readString();
+    const __l1 = __d.readUint32();
+    const __o1 = new Array<Attribute>(__l1);
+    attributes = __o1;
+    for(let __i1 = 0; __i1 < __l1; __i1++) {
+        const __tmp2 = decodeAttribute(__d);
+        if(__tmp2 === null) return null;
+        __o1[__i1] = __tmp2;
+    }
     return {
-        _name: 'main.FFmpegOriginalFileResultFailure',
-        digest,
-        originalFile,
-        details
+        _name: 'main.ProcessedExtractionTargetFileMetadata',
+        attributes
     };
 }
-export function defaultFFmpegOriginalFileResultFailure(params: Partial<FFmpegOriginalFileResultFailureInputParams> = {}): FFmpegOriginalFileResultFailure {
-    return FFmpegOriginalFileResultFailure({
-        digest: defaultFileDigestTrait(),
-        originalFile: "",
-        details: "",
+export function defaultProcessedExtractionTargetFileMetadata(params: Partial<ProcessedExtractionTargetFileMetadataInputParams> = {}): ProcessedExtractionTargetFileMetadata {
+    return ProcessedExtractionTargetFileMetadata({
+        attributes: [],
         ...params
     });
 }
-export function compareFFmpegOriginalFileResultFailure(__a: FFmpegOriginalFileResultFailure, __b: FFmpegOriginalFileResultFailure): boolean {
+export function compareProcessedExtractionTargetFileMetadata(__a: ProcessedExtractionTargetFileMetadata, __b: ProcessedExtractionTargetFileMetadata): boolean {
     return (
         /**
-         * compare parameter digest
+         * compare parameter attributes
          */
-        compareFileDigestTrait(__a['digest'],__b['digest']) &&
-        /**
-         * compare parameter originalFile
-         */
-        __a['originalFile'] === __b['originalFile'] &&
-        /**
-         * compare parameter details
-         */
-        __a['details'] === __b['details']
+        __a['attributes'].length === __b['attributes'].length && Array.from(__a['attributes']).every((__originalItem0,__index0) => (typeof __originalItem0 === 'undefined' ? false : (__item0 => typeof __item0 === 'undefined' ? false : (compareAttribute(__originalItem0,__item0)))(Array.from(__b['attributes'])[__index0])))
     );
 }
-export function updateFFmpegOriginalFileResultFailure(value: FFmpegOriginalFileResultFailure, changes: Partial<FFmpegOriginalFileResultFailureInputParams>) {
-    if(typeof changes['digest'] !== 'undefined') {
-        if(!(compareFileDigestTrait(changes['digest'],value['digest']))) {
-            value = FFmpegOriginalFileResultFailure({
+export function updateProcessedExtractionTargetFileMetadata(value: ProcessedExtractionTargetFileMetadata, changes: Partial<ProcessedExtractionTargetFileMetadataInputParams>) {
+    if(typeof changes['attributes'] !== 'undefined') {
+        if(!(changes['attributes'].length === value['attributes'].length && Array.from(changes['attributes']).every((__originalItem1,__index1) => (typeof __originalItem1 === 'undefined' ? false : (__item1 => typeof __item1 === 'undefined' ? false : (compareAttribute(__originalItem1,__item1)))(Array.from(value['attributes'])[__index1]))))) {
+            value = ProcessedExtractionTargetFileMetadata({
                 ...value,
-                digest: changes['digest'],
-            });
-        }
-    }
-    if(typeof changes['originalFile'] !== 'undefined') {
-        if(!(changes['originalFile'] === value['originalFile'])) {
-            value = FFmpegOriginalFileResultFailure({
-                ...value,
-                originalFile: changes['originalFile'],
-            });
-        }
-    }
-    if(typeof changes['details'] !== 'undefined') {
-        if(!(changes['details'] === value['details'])) {
-            value = FFmpegOriginalFileResultFailure({
-                ...value,
-                details: changes['details'],
+                attributes: changes['attributes'],
             });
         }
     }
     return value;
 }
-export interface FFmpegOriginalFileResultUnknown  {
-    _name: 'main.FFmpegOriginalFileResultUnknown';
-    originalFile: string;
-}
-export function isFFmpegOriginalFileResultUnknown(value: unknown): value is FFmpegOriginalFileResultUnknown {
-    if(!(typeof value === 'object' && value !== null && '_name' in value && typeof value['_name'] === 'string' && value['_name'] === "main.FFmpegOriginalFileResultUnknown")) return false;
-    if(!(
-        "originalFile" in value && ((__v0) => (typeof __v0 === 'string'))(value['originalFile'])
-    )) return false;
-    return true;
-}
-export interface FFmpegOriginalFileResultUnknownInputParams {
-    originalFile: string;
-}
-export function FFmpegOriginalFileResultUnknown(params: FFmpegOriginalFileResultUnknownInputParams): FFmpegOriginalFileResultUnknown {
-    return {
-        _name: 'main.FFmpegOriginalFileResultUnknown',
-        originalFile: params['originalFile']
-    };
-}
-export function encodeFFmpegOriginalFileResultUnknown(__s: ISerializer, value: FFmpegOriginalFileResultUnknown) {
-    __s.writeInt32(-1787151053);
-    /**
-     * encoding param: originalFile
-     */
-    const __pv0 = value['originalFile'];
-    __s.writeString(__pv0);
-}
-export function decodeFFmpegOriginalFileResultUnknown(__d: IDeserializer): FFmpegOriginalFileResultUnknown | null {
-    const __id = __d.readInt32();
-    /**
-     * decode header
-     */
-    if(__id !== -1787151053) return null;
-    let originalFile: string;
-    /**
-     * decoding param: originalFile
-     */
-    originalFile = __d.readString();
-    return {
-        _name: 'main.FFmpegOriginalFileResultUnknown',
-        originalFile
-    };
-}
-export function defaultFFmpegOriginalFileResultUnknown(params: Partial<FFmpegOriginalFileResultUnknownInputParams> = {}): FFmpegOriginalFileResultUnknown {
-    return FFmpegOriginalFileResultUnknown({
-        originalFile: "",
-        ...params
-    });
-}
-export function compareFFmpegOriginalFileResultUnknown(__a: FFmpegOriginalFileResultUnknown, __b: FFmpegOriginalFileResultUnknown): boolean {
-    return (
-        /**
-         * compare parameter originalFile
-         */
-        __a['originalFile'] === __b['originalFile']
-    );
-}
-export function updateFFmpegOriginalFileResultUnknown(value: FFmpegOriginalFileResultUnknown, changes: Partial<FFmpegOriginalFileResultUnknownInputParams>) {
-    if(typeof changes['originalFile'] !== 'undefined') {
-        if(!(changes['originalFile'] === value['originalFile'])) {
-            value = FFmpegOriginalFileResultUnknown({
-                ...value,
-                originalFile: changes['originalFile'],
-            });
-        }
-    }
-    return value;
-}
-export interface FFmpegOriginalFileResultCorrupted  {
-    _name: 'main.FFmpegOriginalFileResultCorrupted';
-}
-export function isFFmpegOriginalFileResultCorrupted(value: unknown): value is FFmpegOriginalFileResultCorrupted {
-    if(!(typeof value === 'object' && value !== null && '_name' in value && typeof value['_name'] === 'string' && value['_name'] === "main.FFmpegOriginalFileResultCorrupted")) return false;
-    return true;
-}
-export interface FFmpegOriginalFileResultCorruptedInputParams {
-}
-export function FFmpegOriginalFileResultCorrupted(_: FFmpegOriginalFileResultCorruptedInputParams = {}): FFmpegOriginalFileResultCorrupted {
-    return {
-        _name: 'main.FFmpegOriginalFileResultCorrupted'
-    };
-}
-export function encodeFFmpegOriginalFileResultCorrupted(__s: ISerializer, _: FFmpegOriginalFileResultCorrupted) {
-    __s.writeInt32(-577838057);
-}
-export function decodeFFmpegOriginalFileResultCorrupted(__d: IDeserializer): FFmpegOriginalFileResultCorrupted | null {
-    const __id = __d.readInt32();
-    /**
-     * decode header
-     */
-    if(__id !== -577838057) return null;
-    return {
-        _name: 'main.FFmpegOriginalFileResultCorrupted',
-    };
-}
-export function defaultFFmpegOriginalFileResultCorrupted(params: Partial<FFmpegOriginalFileResultCorruptedInputParams> = {}): FFmpegOriginalFileResultCorrupted {
-    return FFmpegOriginalFileResultCorrupted({
-        ...params
-    });
-}
-export function compareFFmpegOriginalFileResultCorrupted(__a: FFmpegOriginalFileResultCorrupted, __b: FFmpegOriginalFileResultCorrupted): boolean {
-    return true;
-}
-export function updateFFmpegOriginalFileResultCorrupted(value: FFmpegOriginalFileResultCorrupted, _: Partial<FFmpegOriginalFileResultCorruptedInputParams>) {
-    return value;
-}
-export type FFmpegEncodedFileResult = Readonly<FFmpegEncodedFileResultSuccess> | Readonly<FFmpegEncodedFileResultFailure> | Readonly<FFmpegEncodedFileResultCorrupted>;
-export function isFFmpegEncodedFileResultTrait(value: unknown): value is FFmpegEncodedFileResult {
-    if(isFFmpegEncodedFileResultSuccess(value)) return true;
-    if(isFFmpegEncodedFileResultFailure(value)) return true;
-    if(isFFmpegEncodedFileResultCorrupted(value)) return true;
-    return false;
-}
-export function encodeFFmpegEncodedFileResultTrait(__s: ISerializer,value: FFmpegEncodedFileResult) {
-    switch(value._name) {
-        case 'main.FFmpegEncodedFileResultSuccess':
-            return encodeFFmpegEncodedFileResultSuccess(__s,value);
-        case 'main.FFmpegEncodedFileResultFailure':
-            return encodeFFmpegEncodedFileResultFailure(__s,value);
-        case 'main.FFmpegEncodedFileResultCorrupted':
-            return encodeFFmpegEncodedFileResultCorrupted(__s,value);
-    }
-    throw new Error(`Failed to encode: Received invalid value on "_name" property. We got "${value['_name']}" value, but this function was expecting to receive one of the following:\n\t- main.FFmpegEncodedFileResultSuccess\n\t- main.FFmpegEncodedFileResultFailure\n\t- main.FFmpegEncodedFileResultCorrupted\n\n\nPossible cause is that maybe this type simply does not extend this trait, and somehow the type-checking prevented you from calling this function wrongly.`);
-}
-export function decodeFFmpegEncodedFileResultTrait(__d: IDeserializer) {
-    const __id = __d.readInt32();
-    __d.rewind(4);
-    let value: FFmpegEncodedFileResultSuccess | FFmpegEncodedFileResultFailure | FFmpegEncodedFileResultCorrupted;
-    switch(__id) {
-        case 1056903997: {
-            const tmp = decodeFFmpegEncodedFileResultSuccess(__d);
-            if(tmp === null) return null;
-            value = tmp;
-            break;
-        }
-        case -350724684: {
-            const tmp = decodeFFmpegEncodedFileResultFailure(__d);
-            if(tmp === null) return null;
-            value = tmp;
-            break;
-        }
-        case -188707955: {
-            const tmp = decodeFFmpegEncodedFileResultCorrupted(__d);
-            if(tmp === null) return null;
-            value = tmp;
-            break;
-        }
-        default: return null;
-    }
-    return value;
-}
-export function defaultFFmpegEncodedFileResultTrait() {
-    return defaultFFmpegEncodedFileResultSuccess();
-}
-export function compareFFmpegEncodedFileResultTrait(__a: FFmpegEncodedFileResult, __b: FFmpegEncodedFileResult) {
-    switch(__a._name) {
-        case 'main.FFmpegEncodedFileResultSuccess':
-            if(__b._name !== "main.FFmpegEncodedFileResultSuccess") return false;
-            return compareFFmpegEncodedFileResultSuccess(__a,__b);
-        case 'main.FFmpegEncodedFileResultFailure':
-            if(__b._name !== "main.FFmpegEncodedFileResultFailure") return false;
-            return compareFFmpegEncodedFileResultFailure(__a,__b);
-        case 'main.FFmpegEncodedFileResultCorrupted':
-            if(__b._name !== "main.FFmpegEncodedFileResultCorrupted") return false;
-            return compareFFmpegEncodedFileResultCorrupted(__a,__b);
-    }
-}
-export type AudioCodec = Readonly<AudioCodecOpus>;
-export function isAudioCodecTrait(value: unknown): value is AudioCodec {
-    if(isAudioCodecOpus(value)) return true;
-    return false;
-}
-export function encodeAudioCodecTrait(__s: ISerializer,value: AudioCodec) {
-    switch(value._name) {
-        case 'main.AudioCodecOpus':
-            return encodeAudioCodecOpus(__s,value);
-    }
-    throw new Error(`Failed to encode: Received invalid value on "_name" property. We got "${value['_name']}" value, but this function was expecting to receive one of the following:\n\t- main.AudioCodecOpus\n\n\nPossible cause is that maybe this type simply does not extend this trait, and somehow the type-checking prevented you from calling this function wrongly.`);
-}
-export function decodeAudioCodecTrait(__d: IDeserializer) {
-    const __id = __d.readInt32();
-    __d.rewind(4);
-    let value: AudioCodecOpus;
-    switch(__id) {
-        case -110698646: {
-            const tmp = decodeAudioCodecOpus(__d);
-            if(tmp === null) return null;
-            value = tmp;
-            break;
-        }
-        default: return null;
-    }
-    return value;
-}
-export function defaultAudioCodecTrait() {
-    return defaultAudioCodecOpus();
-}
-export function compareAudioCodecTrait(__a: AudioCodec, __b: AudioCodec) {
-    return compareAudioCodecOpus(__a, __b);
-}
-export interface AudioCodecOpus  {
-    _name: 'main.AudioCodecOpus';
-}
-export function isAudioCodecOpus(value: unknown): value is AudioCodecOpus {
-    if(!(typeof value === 'object' && value !== null && '_name' in value && typeof value['_name'] === 'string' && value['_name'] === "main.AudioCodecOpus")) return false;
-    return true;
-}
-export interface AudioCodecOpusInputParams {
-}
-export function AudioCodecOpus(_: AudioCodecOpusInputParams = {}): AudioCodecOpus {
-    return {
-        _name: 'main.AudioCodecOpus'
-    };
-}
-export function encodeAudioCodecOpus(__s: ISerializer, _: AudioCodecOpus) {
-    __s.writeInt32(-110698646);
-}
-export function decodeAudioCodecOpus(__d: IDeserializer): AudioCodecOpus | null {
-    const __id = __d.readInt32();
-    /**
-     * decode header
-     */
-    if(__id !== -110698646) return null;
-    return {
-        _name: 'main.AudioCodecOpus',
-    };
-}
-export function defaultAudioCodecOpus(params: Partial<AudioCodecOpusInputParams> = {}): AudioCodecOpus {
-    return AudioCodecOpus({
-        ...params
-    });
-}
-export function compareAudioCodecOpus(__a: AudioCodecOpus, __b: AudioCodecOpus): boolean {
-    return true;
-}
-export function updateAudioCodecOpus(value: AudioCodecOpus, _: Partial<AudioCodecOpusInputParams>) {
-    return value;
-}
-export interface FFmpegEncodedFileResultSuccess  {
-    _name: 'main.FFmpegEncodedFileResultSuccess';
-    origin: Readonly<FFmpegOriginalFileResult>;
-    outputFile: string;
-    bitrate: string;
-    sampleRate: number;
-    channelCount: number;
-    audioCodec: Readonly<AudioCodec>;
-}
-export function isFFmpegEncodedFileResultSuccess(value: unknown): value is FFmpegEncodedFileResultSuccess {
-    if(!(typeof value === 'object' && value !== null && '_name' in value && typeof value['_name'] === 'string' && value['_name'] === "main.FFmpegEncodedFileResultSuccess")) return false;
-    if(!(
-        "origin" in value && ((__v0) => (isFFmpegOriginalFileResultTrait(__v0)))(value['origin'])
-    )) return false;
-    if(!(
-        "outputFile" in value && ((__v1) => (typeof __v1 === 'string'))(value['outputFile'])
-    )) return false;
-    if(!(
-        "bitrate" in value && ((__v2) => (typeof __v2 === 'string'))(value['bitrate'])
-    )) return false;
-    if(!(
-        "sampleRate" in value && ((__v3) => (typeof __v3 === 'number' && JSBI.equal(JSBI.BigInt(__v3),JSBI.BigInt(__v3)) && JSBI.greaterThanOrEqual(JSBI.BigInt(__v3),JSBI.BigInt("-2147483648")) && JSBI.lessThanOrEqual(JSBI.BigInt(__v3),JSBI.BigInt("2147483647"))))(value['sampleRate'])
-    )) return false;
-    if(!(
-        "channelCount" in value && ((__v4) => (typeof __v4 === 'number' && JSBI.equal(JSBI.BigInt(__v4),JSBI.BigInt(__v4)) && JSBI.greaterThanOrEqual(JSBI.BigInt(__v4),JSBI.BigInt("-2147483648")) && JSBI.lessThanOrEqual(JSBI.BigInt(__v4),JSBI.BigInt("2147483647"))))(value['channelCount'])
-    )) return false;
-    if(!(
-        "audioCodec" in value && ((__v5) => (isAudioCodecTrait(__v5)))(value['audioCodec'])
-    )) return false;
-    return true;
-}
-export interface FFmpegEncodedFileResultSuccessInputParams {
-    origin: Readonly<FFmpegOriginalFileResult>;
-    outputFile: string;
-    bitrate: string;
-    sampleRate: number;
-    channelCount: number;
-    audioCodec: Readonly<AudioCodec>;
-}
-export function FFmpegEncodedFileResultSuccess(params: FFmpegEncodedFileResultSuccessInputParams): FFmpegEncodedFileResultSuccess {
-    return {
-        _name: 'main.FFmpegEncodedFileResultSuccess',
-        origin: params['origin'],
-        outputFile: params['outputFile'],
-        bitrate: params['bitrate'],
-        sampleRate: params['sampleRate'],
-        channelCount: params['channelCount'],
-        audioCodec: params['audioCodec']
-    };
-}
-export function encodeFFmpegEncodedFileResultSuccess(__s: ISerializer, value: FFmpegEncodedFileResultSuccess) {
-    __s.writeInt32(1056903997);
-    /**
-     * encoding param: origin
-     */
-    const __pv0 = value['origin'];
-    encodeFFmpegOriginalFileResultTrait(__s,__pv0);
-    /**
-     * encoding param: outputFile
-     */
-    const __pv1 = value['outputFile'];
-    __s.writeString(__pv1);
-    /**
-     * encoding param: bitrate
-     */
-    const __pv2 = value['bitrate'];
-    __s.writeString(__pv2);
-    /**
-     * encoding param: sampleRate
-     */
-    const __pv3 = value['sampleRate'];
-    __s.writeInt32(__pv3);
-    /**
-     * encoding param: channelCount
-     */
-    const __pv4 = value['channelCount'];
-    __s.writeInt32(__pv4);
-    /**
-     * encoding param: audioCodec
-     */
-    const __pv5 = value['audioCodec'];
-    encodeAudioCodecTrait(__s,__pv5);
-}
-export function decodeFFmpegEncodedFileResultSuccess(__d: IDeserializer): FFmpegEncodedFileResultSuccess | null {
-    const __id = __d.readInt32();
-    /**
-     * decode header
-     */
-    if(__id !== 1056903997) return null;
-    let origin: FFmpegOriginalFileResult;
-    let outputFile: string;
-    let bitrate: string;
-    let sampleRate: number;
-    let channelCount: number;
-    let audioCodec: AudioCodec;
-    /**
-     * decoding param: origin
-     */
-    const __tmp1 = decodeFFmpegOriginalFileResultTrait(__d);
-    if(__tmp1 === null) return null;
-    origin = __tmp1;
-    /**
-     * decoding param: outputFile
-     */
-    outputFile = __d.readString();
-    /**
-     * decoding param: bitrate
-     */
-    bitrate = __d.readString();
-    /**
-     * decoding param: sampleRate
-     */
-    sampleRate = __d.readInt32();
-    /**
-     * decoding param: channelCount
-     */
-    channelCount = __d.readInt32();
-    /**
-     * decoding param: audioCodec
-     */
-    const __tmp6 = decodeAudioCodecTrait(__d);
-    if(__tmp6 === null) return null;
-    audioCodec = __tmp6;
-    return {
-        _name: 'main.FFmpegEncodedFileResultSuccess',
-        origin,
-        outputFile,
-        bitrate,
-        sampleRate,
-        channelCount,
-        audioCodec
-    };
-}
-export function defaultFFmpegEncodedFileResultSuccess(params: Partial<FFmpegEncodedFileResultSuccessInputParams> = {}): FFmpegEncodedFileResultSuccess {
-    return FFmpegEncodedFileResultSuccess({
-        origin: defaultFFmpegOriginalFileResultTrait(),
-        outputFile: "",
-        bitrate: "",
-        sampleRate: 0,
-        channelCount: 0,
-        audioCodec: defaultAudioCodecTrait(),
-        ...params
-    });
-}
-export function compareFFmpegEncodedFileResultSuccess(__a: FFmpegEncodedFileResultSuccess, __b: FFmpegEncodedFileResultSuccess): boolean {
-    return (
-        /**
-         * compare parameter origin
-         */
-        compareFFmpegOriginalFileResultTrait(__a['origin'],__b['origin']) &&
-        /**
-         * compare parameter outputFile
-         */
-        __a['outputFile'] === __b['outputFile'] &&
-        /**
-         * compare parameter bitrate
-         */
-        __a['bitrate'] === __b['bitrate'] &&
-        /**
-         * compare parameter sampleRate
-         */
-        __a['sampleRate'] === __b['sampleRate'] &&
-        /**
-         * compare parameter channelCount
-         */
-        __a['channelCount'] === __b['channelCount'] &&
-        /**
-         * compare parameter audioCodec
-         */
-        compareAudioCodecTrait(__a['audioCodec'],__b['audioCodec'])
-    );
-}
-export function updateFFmpegEncodedFileResultSuccess(value: FFmpegEncodedFileResultSuccess, changes: Partial<FFmpegEncodedFileResultSuccessInputParams>) {
-    if(typeof changes['origin'] !== 'undefined') {
-        if(!(compareFFmpegOriginalFileResultTrait(changes['origin'],value['origin']))) {
-            value = FFmpegEncodedFileResultSuccess({
-                ...value,
-                origin: changes['origin'],
-            });
-        }
-    }
-    if(typeof changes['outputFile'] !== 'undefined') {
-        if(!(changes['outputFile'] === value['outputFile'])) {
-            value = FFmpegEncodedFileResultSuccess({
-                ...value,
-                outputFile: changes['outputFile'],
-            });
-        }
-    }
-    if(typeof changes['bitrate'] !== 'undefined') {
-        if(!(changes['bitrate'] === value['bitrate'])) {
-            value = FFmpegEncodedFileResultSuccess({
-                ...value,
-                bitrate: changes['bitrate'],
-            });
-        }
-    }
-    if(typeof changes['sampleRate'] !== 'undefined') {
-        if(!(changes['sampleRate'] === value['sampleRate'])) {
-            value = FFmpegEncodedFileResultSuccess({
-                ...value,
-                sampleRate: changes['sampleRate'],
-            });
-        }
-    }
-    if(typeof changes['channelCount'] !== 'undefined') {
-        if(!(changes['channelCount'] === value['channelCount'])) {
-            value = FFmpegEncodedFileResultSuccess({
-                ...value,
-                channelCount: changes['channelCount'],
-            });
-        }
-    }
-    if(typeof changes['audioCodec'] !== 'undefined') {
-        if(!(compareAudioCodecTrait(changes['audioCodec'],value['audioCodec']))) {
-            value = FFmpegEncodedFileResultSuccess({
-                ...value,
-                audioCodec: changes['audioCodec'],
-            });
-        }
-    }
-    return value;
-}
-export interface FFmpegEncodedFileResultFailure  {
-    _name: 'main.FFmpegEncodedFileResultFailure';
-    origin: Readonly<FFmpegOriginalFileResult>;
-    details: string;
-}
-export function isFFmpegEncodedFileResultFailure(value: unknown): value is FFmpegEncodedFileResultFailure {
-    if(!(typeof value === 'object' && value !== null && '_name' in value && typeof value['_name'] === 'string' && value['_name'] === "main.FFmpegEncodedFileResultFailure")) return false;
-    if(!(
-        "origin" in value && ((__v0) => (isFFmpegOriginalFileResultTrait(__v0)))(value['origin'])
-    )) return false;
-    if(!(
-        "details" in value && ((__v1) => (typeof __v1 === 'string'))(value['details'])
-    )) return false;
-    return true;
-}
-export interface FFmpegEncodedFileResultFailureInputParams {
-    origin: Readonly<FFmpegOriginalFileResult>;
-    details: string;
-}
-export function FFmpegEncodedFileResultFailure(params: FFmpegEncodedFileResultFailureInputParams): FFmpegEncodedFileResultFailure {
-    return {
-        _name: 'main.FFmpegEncodedFileResultFailure',
-        origin: params['origin'],
-        details: params['details']
-    };
-}
-export function encodeFFmpegEncodedFileResultFailure(__s: ISerializer, value: FFmpegEncodedFileResultFailure) {
-    __s.writeInt32(-350724684);
-    /**
-     * encoding param: origin
-     */
-    const __pv0 = value['origin'];
-    encodeFFmpegOriginalFileResultTrait(__s,__pv0);
-    /**
-     * encoding param: details
-     */
-    const __pv1 = value['details'];
-    __s.writeString(__pv1);
-}
-export function decodeFFmpegEncodedFileResultFailure(__d: IDeserializer): FFmpegEncodedFileResultFailure | null {
-    const __id = __d.readInt32();
-    /**
-     * decode header
-     */
-    if(__id !== -350724684) return null;
-    let origin: FFmpegOriginalFileResult;
-    let details: string;
-    /**
-     * decoding param: origin
-     */
-    const __tmp1 = decodeFFmpegOriginalFileResultTrait(__d);
-    if(__tmp1 === null) return null;
-    origin = __tmp1;
-    /**
-     * decoding param: details
-     */
-    details = __d.readString();
-    return {
-        _name: 'main.FFmpegEncodedFileResultFailure',
-        origin,
-        details
-    };
-}
-export function defaultFFmpegEncodedFileResultFailure(params: Partial<FFmpegEncodedFileResultFailureInputParams> = {}): FFmpegEncodedFileResultFailure {
-    return FFmpegEncodedFileResultFailure({
-        origin: defaultFFmpegOriginalFileResultTrait(),
-        details: "",
-        ...params
-    });
-}
-export function compareFFmpegEncodedFileResultFailure(__a: FFmpegEncodedFileResultFailure, __b: FFmpegEncodedFileResultFailure): boolean {
-    return (
-        /**
-         * compare parameter origin
-         */
-        compareFFmpegOriginalFileResultTrait(__a['origin'],__b['origin']) &&
-        /**
-         * compare parameter details
-         */
-        __a['details'] === __b['details']
-    );
-}
-export function updateFFmpegEncodedFileResultFailure(value: FFmpegEncodedFileResultFailure, changes: Partial<FFmpegEncodedFileResultFailureInputParams>) {
-    if(typeof changes['origin'] !== 'undefined') {
-        if(!(compareFFmpegOriginalFileResultTrait(changes['origin'],value['origin']))) {
-            value = FFmpegEncodedFileResultFailure({
-                ...value,
-                origin: changes['origin'],
-            });
-        }
-    }
-    if(typeof changes['details'] !== 'undefined') {
-        if(!(changes['details'] === value['details'])) {
-            value = FFmpegEncodedFileResultFailure({
-                ...value,
-                details: changes['details'],
-            });
-        }
-    }
-    return value;
-}
-export interface FFmpegEncodedFileResultCorrupted  {
-    _name: 'main.FFmpegEncodedFileResultCorrupted';
-}
-export function isFFmpegEncodedFileResultCorrupted(value: unknown): value is FFmpegEncodedFileResultCorrupted {
-    if(!(typeof value === 'object' && value !== null && '_name' in value && typeof value['_name'] === 'string' && value['_name'] === "main.FFmpegEncodedFileResultCorrupted")) return false;
-    return true;
-}
-export interface FFmpegEncodedFileResultCorruptedInputParams {
-}
-export function FFmpegEncodedFileResultCorrupted(_: FFmpegEncodedFileResultCorruptedInputParams = {}): FFmpegEncodedFileResultCorrupted {
-    return {
-        _name: 'main.FFmpegEncodedFileResultCorrupted'
-    };
-}
-export function encodeFFmpegEncodedFileResultCorrupted(__s: ISerializer, _: FFmpegEncodedFileResultCorrupted) {
-    __s.writeInt32(-188707955);
-}
-export function decodeFFmpegEncodedFileResultCorrupted(__d: IDeserializer): FFmpegEncodedFileResultCorrupted | null {
-    const __id = __d.readInt32();
-    /**
-     * decode header
-     */
-    if(__id !== -188707955) return null;
-    return {
-        _name: 'main.FFmpegEncodedFileResultCorrupted',
-    };
-}
-export function defaultFFmpegEncodedFileResultCorrupted(params: Partial<FFmpegEncodedFileResultCorruptedInputParams> = {}): FFmpegEncodedFileResultCorrupted {
-    return FFmpegEncodedFileResultCorrupted({
-        ...params
-    });
-}
-export function compareFFmpegEncodedFileResultCorrupted(__a: FFmpegEncodedFileResultCorrupted, __b: FFmpegEncodedFileResultCorrupted): boolean {
-    return true;
-}
-export function updateFFmpegEncodedFileResultCorrupted(value: FFmpegEncodedFileResultCorrupted, _: Partial<FFmpegEncodedFileResultCorruptedInputParams>) {
-    return value;
-}
-export type FileDigest = Readonly<FileDigestSHA1>;
-export function isFileDigestTrait(value: unknown): value is FileDigest {
-    if(isFileDigestSHA1(value)) return true;
-    return false;
-}
-export function encodeFileDigestTrait(__s: ISerializer,value: FileDigest) {
-    switch(value._name) {
-        case 'main.FileDigestSHA1':
-            return encodeFileDigestSHA1(__s,value);
-    }
-    throw new Error(`Failed to encode: Received invalid value on "_name" property. We got "${value['_name']}" value, but this function was expecting to receive one of the following:\n\t- main.FileDigestSHA1\n\n\nPossible cause is that maybe this type simply does not extend this trait, and somehow the type-checking prevented you from calling this function wrongly.`);
-}
-export function decodeFileDigestTrait(__d: IDeserializer) {
-    const __id = __d.readInt32();
-    __d.rewind(4);
-    let value: FileDigestSHA1;
-    switch(__id) {
-        case -2079332690: {
-            const tmp = decodeFileDigestSHA1(__d);
-            if(tmp === null) return null;
-            value = tmp;
-            break;
-        }
-        default: return null;
-    }
-    return value;
-}
-export function defaultFileDigestTrait() {
-    return defaultFileDigestSHA1();
-}
-export function compareFileDigestTrait(__a: FileDigest, __b: FileDigest) {
-    return compareFileDigestSHA1(__a, __b);
-}
-export interface FileDigestSHA1  {
-    _name: 'main.FileDigestSHA1';
+export interface Attribute  {
+    _name: 'main.Attribute';
+    name: string;
     value: string;
 }
-export function isFileDigestSHA1(value: unknown): value is FileDigestSHA1 {
-    if(!(typeof value === 'object' && value !== null && '_name' in value && typeof value['_name'] === 'string' && value['_name'] === "main.FileDigestSHA1")) return false;
+export function isAttribute(value: unknown): value is Attribute {
+    if(!(typeof value === 'object' && value !== null && '_name' in value && typeof value['_name'] === 'string' && value['_name'] === "main.Attribute")) return false;
     if(!(
-        "value" in value && ((__v0) => (typeof __v0 === 'string'))(value['value'])
+        "name" in value && ((__v0) => (typeof __v0 === 'string'))(value['name'])
+    )) return false;
+    if(!(
+        "value" in value && ((__v1) => (typeof __v1 === 'string'))(value['value'])
     )) return false;
     return true;
 }
-export interface FileDigestSHA1InputParams {
+export interface AttributeInputParams {
+    name: string;
     value: string;
 }
-export function FileDigestSHA1(params: FileDigestSHA1InputParams): FileDigestSHA1 {
+export function Attribute(params: AttributeInputParams): Attribute {
     return {
-        _name: 'main.FileDigestSHA1',
+        _name: 'main.Attribute',
+        name: params['name'],
         value: params['value']
     };
 }
-export function encodeFileDigestSHA1(__s: ISerializer, value: FileDigestSHA1) {
-    __s.writeInt32(-2079332690);
+export function encodeAttribute(__s: ISerializer, value: Attribute) {
+    __s.writeInt32(1048614269);
+    /**
+     * encoding param: name
+     */
+    const __pv0 = value['name'];
+    __s.writeString(__pv0);
     /**
      * encoding param: value
      */
-    const __pv0 = value['value'];
-    __s.writeString(__pv0);
+    const __pv1 = value['value'];
+    __s.writeString(__pv1);
 }
-export function decodeFileDigestSHA1(__d: IDeserializer): FileDigestSHA1 | null {
+export function decodeAttribute(__d: IDeserializer): Attribute | null {
     const __id = __d.readInt32();
     /**
      * decode header
      */
-    if(__id !== -2079332690) return null;
+    if(__id !== 1048614269) return null;
+    let name: string;
     let value: string;
+    /**
+     * decoding param: name
+     */
+    name = __d.readString();
     /**
      * decoding param: value
      */
     value = __d.readString();
     return {
-        _name: 'main.FileDigestSHA1',
+        _name: 'main.Attribute',
+        name,
         value
     };
 }
-export function defaultFileDigestSHA1(params: Partial<FileDigestSHA1InputParams> = {}): FileDigestSHA1 {
-    return FileDigestSHA1({
+export function defaultAttribute(params: Partial<AttributeInputParams> = {}): Attribute {
+    return Attribute({
+        name: "",
         value: "",
         ...params
     });
 }
-export function compareFileDigestSHA1(__a: FileDigestSHA1, __b: FileDigestSHA1): boolean {
+export function compareAttribute(__a: Attribute, __b: Attribute): boolean {
     return (
+        /**
+         * compare parameter name
+         */
+        __a['name'] === __b['name'] &&
         /**
          * compare parameter value
          */
         __a['value'] === __b['value']
     );
 }
-export function updateFileDigestSHA1(value: FileDigestSHA1, changes: Partial<FileDigestSHA1InputParams>) {
+export function updateAttribute(value: Attribute, changes: Partial<AttributeInputParams>) {
+    if(typeof changes['name'] !== 'undefined') {
+        if(!(changes['name'] === value['name'])) {
+            value = Attribute({
+                ...value,
+                name: changes['name'],
+            });
+        }
+    }
     if(typeof changes['value'] !== 'undefined') {
         if(!(changes['value'] === value['value'])) {
-            value = FileDigestSHA1({
+            value = Attribute({
                 ...value,
                 value: changes['value'],
+            });
+        }
+    }
+    return value;
+}
+export interface ProcessedExtractionTargetFile  {
+    _name: 'main.ProcessedExtractionTargetFile';
+    file: Readonly<FileLocation>;
+    metadata: Readonly<ProcessedExtractionTargetFileMetadata>;
+}
+export function isProcessedExtractionTargetFile(value: unknown): value is ProcessedExtractionTargetFile {
+    if(!(typeof value === 'object' && value !== null && '_name' in value && typeof value['_name'] === 'string' && value['_name'] === "main.ProcessedExtractionTargetFile")) return false;
+    if(!(
+        "file" in value && ((__v0) => (isFileLocation(__v0)))(value['file'])
+    )) return false;
+    if(!(
+        "metadata" in value && ((__v1) => (isProcessedExtractionTargetFileMetadata(__v1)))(value['metadata'])
+    )) return false;
+    return true;
+}
+export interface ProcessedExtractionTargetFileInputParams {
+    file: Readonly<FileLocation>;
+    metadata: Readonly<ProcessedExtractionTargetFileMetadata>;
+}
+export function ProcessedExtractionTargetFile(params: ProcessedExtractionTargetFileInputParams): ProcessedExtractionTargetFile {
+    return {
+        _name: 'main.ProcessedExtractionTargetFile',
+        file: params['file'],
+        metadata: params['metadata']
+    };
+}
+export function encodeProcessedExtractionTargetFile(__s: ISerializer, value: ProcessedExtractionTargetFile) {
+    __s.writeInt32(1290052103);
+    /**
+     * encoding param: file
+     */
+    const __pv0 = value['file'];
+    encodeFileLocation(__s,__pv0);
+    /**
+     * encoding param: metadata
+     */
+    const __pv1 = value['metadata'];
+    encodeProcessedExtractionTargetFileMetadata(__s,__pv1);
+}
+export function decodeProcessedExtractionTargetFile(__d: IDeserializer): ProcessedExtractionTargetFile | null {
+    const __id = __d.readInt32();
+    /**
+     * decode header
+     */
+    if(__id !== 1290052103) return null;
+    let file: FileLocation;
+    let metadata: ProcessedExtractionTargetFileMetadata;
+    /**
+     * decoding param: file
+     */
+    const __tmp1 = decodeFileLocation(__d);
+    if(__tmp1 === null) return null;
+    file = __tmp1;
+    /**
+     * decoding param: metadata
+     */
+    const __tmp2 = decodeProcessedExtractionTargetFileMetadata(__d);
+    if(__tmp2 === null) return null;
+    metadata = __tmp2;
+    return {
+        _name: 'main.ProcessedExtractionTargetFile',
+        file,
+        metadata
+    };
+}
+export function defaultProcessedExtractionTargetFile(params: Partial<ProcessedExtractionTargetFileInputParams> = {}): ProcessedExtractionTargetFile {
+    return ProcessedExtractionTargetFile({
+        file: defaultFileLocation(),
+        metadata: defaultProcessedExtractionTargetFileMetadata(),
+        ...params
+    });
+}
+export function compareProcessedExtractionTargetFile(__a: ProcessedExtractionTargetFile, __b: ProcessedExtractionTargetFile): boolean {
+    return (
+        /**
+         * compare parameter file
+         */
+        compareFileLocation(__a['file'],__b['file']) &&
+        /**
+         * compare parameter metadata
+         */
+        compareProcessedExtractionTargetFileMetadata(__a['metadata'],__b['metadata'])
+    );
+}
+export function updateProcessedExtractionTargetFile(value: ProcessedExtractionTargetFile, changes: Partial<ProcessedExtractionTargetFileInputParams>) {
+    if(typeof changes['file'] !== 'undefined') {
+        if(!(compareFileLocation(changes['file'],value['file']))) {
+            value = ProcessedExtractionTargetFile({
+                ...value,
+                file: changes['file'],
+            });
+        }
+    }
+    if(typeof changes['metadata'] !== 'undefined') {
+        if(!(compareProcessedExtractionTargetFileMetadata(changes['metadata'],value['metadata']))) {
+            value = ProcessedExtractionTargetFile({
+                ...value,
+                metadata: changes['metadata'],
+            });
+        }
+    }
+    return value;
+}
+export interface FileLocation  {
+    _name: 'main.FileLocation';
+    location: string;
+}
+export function isFileLocation(value: unknown): value is FileLocation {
+    if(!(typeof value === 'object' && value !== null && '_name' in value && typeof value['_name'] === 'string' && value['_name'] === "main.FileLocation")) return false;
+    if(!(
+        "location" in value && ((__v0) => (typeof __v0 === 'string'))(value['location'])
+    )) return false;
+    return true;
+}
+export interface FileLocationInputParams {
+    location: string;
+}
+export function FileLocation(params: FileLocationInputParams): FileLocation {
+    return {
+        _name: 'main.FileLocation',
+        location: params['location']
+    };
+}
+export function encodeFileLocation(__s: ISerializer, value: FileLocation) {
+    __s.writeInt32(1055334972);
+    /**
+     * encoding param: location
+     */
+    const __pv0 = value['location'];
+    __s.writeString(__pv0);
+}
+export function decodeFileLocation(__d: IDeserializer): FileLocation | null {
+    const __id = __d.readInt32();
+    /**
+     * decode header
+     */
+    if(__id !== 1055334972) return null;
+    let location: string;
+    /**
+     * decoding param: location
+     */
+    location = __d.readString();
+    return {
+        _name: 'main.FileLocation',
+        location
+    };
+}
+export function defaultFileLocation(params: Partial<FileLocationInputParams> = {}): FileLocation {
+    return FileLocation({
+        location: "",
+        ...params
+    });
+}
+export function compareFileLocation(__a: FileLocation, __b: FileLocation): boolean {
+    return (
+        /**
+         * compare parameter location
+         */
+        __a['location'] === __b['location']
+    );
+}
+export function updateFileLocation(value: FileLocation, changes: Partial<FileLocationInputParams>) {
+    if(typeof changes['location'] !== 'undefined') {
+        if(!(changes['location'] === value['location'])) {
+            value = FileLocation({
+                ...value,
+                location: changes['location'],
+            });
+        }
+    }
+    return value;
+}
+export interface TestURL  {
+    _name: 'main.TestURL';
+    href: string;
+    protocol: string;
+    hostname: string;
+    port: string | null;
+    pathname: string;
+    search: ReadonlyMap<string, string>;
+}
+export function isTestURL(value: unknown): value is TestURL {
+    if(!(typeof value === 'object' && value !== null && '_name' in value && typeof value['_name'] === 'string' && value['_name'] === "main.TestURL")) return false;
+    if(!(
+        "href" in value && ((__v0) => (typeof __v0 === 'string'))(value['href'])
+    )) return false;
+    if(!(
+        "protocol" in value && ((__v1) => (typeof __v1 === 'string'))(value['protocol'])
+    )) return false;
+    if(!(
+        "hostname" in value && ((__v2) => (typeof __v2 === 'string'))(value['hostname'])
+    )) return false;
+    if(!(
+        "port" in value && ((__v3) => (__v3 === null ? true : ((x) => (typeof x === 'string'))(__v3)))(value['port'])
+    )) return false;
+    if(!(
+        "pathname" in value && ((__v5) => (typeof __v5 === 'string'))(value['pathname'])
+    )) return false;
+    if(!(
+        "search" in value && ((__v6) => (__v6 instanceof Map && Array.from(__v6).every(([k,v]) => (typeof k === 'string' && typeof v === 'string'))))(value['search'])
+    )) return false;
+    return true;
+}
+export interface TestURLInputParams {
+    href: string;
+    protocol: string;
+    hostname: string;
+    port: string | null;
+    pathname: string;
+    search: ReadonlyMap<string, string>;
+}
+export function TestURL(params: TestURLInputParams): TestURL {
+    return {
+        _name: 'main.TestURL',
+        href: params['href'],
+        protocol: params['protocol'],
+        hostname: params['hostname'],
+        port: params['port'],
+        pathname: params['pathname'],
+        search: params['search']
+    };
+}
+export function encodeTestURL(__s: ISerializer, value: TestURL) {
+    __s.writeInt32(1491604645);
+    /**
+     * encoding param: href
+     */
+    const __pv0 = value['href'];
+    __s.writeString(__pv0);
+    /**
+     * encoding param: protocol
+     */
+    const __pv1 = value['protocol'];
+    __s.writeString(__pv1);
+    /**
+     * encoding param: hostname
+     */
+    const __pv2 = value['hostname'];
+    __s.writeString(__pv2);
+    /**
+     * encoding param: port
+     */
+    const __pv3 = value['port'];
+    if(__pv3 === null) {
+        __s.writeUint8(0);
+    } else {
+        __s.writeUint8(1);
+        __s.writeString(__pv3);
+    }
+    /**
+     * encoding param: pathname
+     */
+    const __pv5 = value['pathname'];
+    __s.writeString(__pv5);
+    /**
+     * encoding param: search
+     */
+    const __pv6 = value['search'];
+    __s.writeUint32(__pv6.size);
+    for(const [__k7,__v7] of __pv6) {
+        __s.writeString(__k7);
+        __s.writeString(__v7);
+    }
+}
+export function decodeTestURL(__d: IDeserializer): TestURL | null {
+    const __id = __d.readInt32();
+    /**
+     * decode header
+     */
+    if(__id !== 1491604645) return null;
+    let href: string;
+    let protocol: string;
+    let hostname: string;
+    let port: string | null;
+    let pathname: string;
+    let search: Map<string, string>;
+    /**
+     * decoding param: href
+     */
+    href = __d.readString();
+    /**
+     * decoding param: protocol
+     */
+    protocol = __d.readString();
+    /**
+     * decoding param: hostname
+     */
+    hostname = __d.readString();
+    /**
+     * decoding param: port
+     */
+    if(__d.readUint8() === 1) {
+        port = __d.readString();
+    } else {
+        port = null;
+    }
+    /**
+     * decoding param: pathname
+     */
+    pathname = __d.readString();
+    /**
+     * decoding param: search
+     */
+    const __l7 = __d.readUint32();
+    const __o7 = new Map<string, string>();
+    search = __o7;
+    let __k7: string;
+    let __v7: string;
+    for(let __i7 = 0; __i7 < __l7; __i7++) {
+        __k7 = __d.readString();
+        __v7 = __d.readString();
+        __o7.set(__k7, __v7);
+    }
+    return {
+        _name: 'main.TestURL',
+        href,
+        protocol,
+        hostname,
+        port,
+        pathname,
+        search
+    };
+}
+export function defaultTestURL(params: Partial<TestURLInputParams> = {}): TestURL {
+    return TestURL({
+        href: "",
+        protocol: "",
+        hostname: "",
+        port: null,
+        pathname: "",
+        search: new Map<string, string>(),
+        ...params
+    });
+}
+export function compareTestURL(__a: TestURL, __b: TestURL): boolean {
+    return (
+        /**
+         * compare parameter href
+         */
+        __a['href'] === __b['href'] &&
+        /**
+         * compare parameter protocol
+         */
+        __a['protocol'] === __b['protocol'] &&
+        /**
+         * compare parameter hostname
+         */
+        __a['hostname'] === __b['hostname'] &&
+        /**
+         * compare parameter port
+         */
+        ((__dp31, __dp32) => __dp31 !== null && __dp32 !== null ? __dp31 === __dp32 : __dp31 === __dp32)(__a['port'],__b['port']) &&
+        /**
+         * compare parameter pathname
+         */
+        __a['pathname'] === __b['pathname'] &&
+        /**
+         * compare parameter search
+         */
+        ((l1,l2) => (l1.every(([k1,v1],i) => ((__v25 => typeof __v25 === 'undefined' ? false : k1 === __v25[0] && v1 === __v25[1])(l2[i])))))(Array.from(__a['search']),Array.from(__b['search']))
+    );
+}
+export function updateTestURL(value: TestURL, changes: Partial<TestURLInputParams>) {
+    if(typeof changes['href'] !== 'undefined') {
+        if(!(changes['href'] === value['href'])) {
+            value = TestURL({
+                ...value,
+                href: changes['href'],
+            });
+        }
+    }
+    if(typeof changes['protocol'] !== 'undefined') {
+        if(!(changes['protocol'] === value['protocol'])) {
+            value = TestURL({
+                ...value,
+                protocol: changes['protocol'],
+            });
+        }
+    }
+    if(typeof changes['hostname'] !== 'undefined') {
+        if(!(changes['hostname'] === value['hostname'])) {
+            value = TestURL({
+                ...value,
+                hostname: changes['hostname'],
+            });
+        }
+    }
+    if(typeof changes['port'] !== 'undefined') {
+        if(!(((__dp41, __dp42) => __dp41 !== null && __dp42 !== null ? __dp41 === __dp42 : __dp41 === __dp42)(changes['port'],value['port']))) {
+            value = TestURL({
+                ...value,
+                port: changes['port'],
+            });
+        }
+    }
+    if(typeof changes['pathname'] !== 'undefined') {
+        if(!(changes['pathname'] === value['pathname'])) {
+            value = TestURL({
+                ...value,
+                pathname: changes['pathname'],
+            });
+        }
+    }
+    if(typeof changes['search'] !== 'undefined') {
+        if(!(((l1,l2) => (l1.every(([k1,v1],i) => ((__v27 => typeof __v27 === 'undefined' ? false : k1 === __v27[0] && v1 === __v27[1])(l2[i])))))(Array.from(changes['search']),Array.from(value['search'])))) {
+            value = TestURL({
+                ...value,
+                search: changes['search'],
+            });
+        }
+    }
+    return value;
+}
+export interface IPHttpResult  {
+    _name: 'main.IPHttpResult';
+    target: Readonly<TestURL>;
+    result: Readonly<FileLocation>;
+    status: number | null;
+    response: Readonly<HttpConnectionInformation>;
+    request: Readonly<HttpConnectionInformation>;
+}
+export function isIPHttpResult(value: unknown): value is IPHttpResult {
+    if(!(typeof value === 'object' && value !== null && '_name' in value && typeof value['_name'] === 'string' && value['_name'] === "main.IPHttpResult")) return false;
+    if(!(
+        "target" in value && ((__v0) => (isTestURL(__v0)))(value['target'])
+    )) return false;
+    if(!(
+        "result" in value && ((__v1) => (isFileLocation(__v1)))(value['result'])
+    )) return false;
+    if(!(
+        "status" in value && ((__v2) => (__v2 === null ? true : ((x) => (typeof x === 'number' && JSBI.equal(JSBI.BigInt(x),JSBI.BigInt(x)) && JSBI.greaterThanOrEqual(JSBI.BigInt(x),JSBI.BigInt("0")) && JSBI.lessThanOrEqual(JSBI.BigInt(x),JSBI.BigInt("65535"))))(__v2)))(value['status'])
+    )) return false;
+    if(!(
+        "response" in value && ((__v4) => (isHttpConnectionInformation(__v4)))(value['response'])
+    )) return false;
+    if(!(
+        "request" in value && ((__v5) => (isHttpConnectionInformation(__v5)))(value['request'])
+    )) return false;
+    return true;
+}
+export interface IPHttpResultInputParams {
+    target: Readonly<TestURL>;
+    result: Readonly<FileLocation>;
+    status: number | null;
+    response: Readonly<HttpConnectionInformation>;
+    request: Readonly<HttpConnectionInformation>;
+}
+export function IPHttpResult(params: IPHttpResultInputParams): IPHttpResult {
+    return {
+        _name: 'main.IPHttpResult',
+        target: params['target'],
+        result: params['result'],
+        status: params['status'],
+        response: params['response'],
+        request: params['request']
+    };
+}
+export function encodeIPHttpResult(__s: ISerializer, value: IPHttpResult) {
+    __s.writeInt32(1412938592);
+    /**
+     * encoding param: target
+     */
+    const __pv0 = value['target'];
+    encodeTestURL(__s,__pv0);
+    /**
+     * encoding param: result
+     */
+    const __pv1 = value['result'];
+    encodeFileLocation(__s,__pv1);
+    /**
+     * encoding param: status
+     */
+    const __pv2 = value['status'];
+    if(__pv2 === null) {
+        __s.writeUint8(0);
+    } else {
+        __s.writeUint8(1);
+        __s.writeUint16(__pv2);
+    }
+    /**
+     * encoding param: response
+     */
+    const __pv4 = value['response'];
+    encodeHttpConnectionInformation(__s,__pv4);
+    /**
+     * encoding param: request
+     */
+    const __pv5 = value['request'];
+    encodeHttpConnectionInformation(__s,__pv5);
+}
+export function decodeIPHttpResult(__d: IDeserializer): IPHttpResult | null {
+    const __id = __d.readInt32();
+    /**
+     * decode header
+     */
+    if(__id !== 1412938592) return null;
+    let target: TestURL;
+    let result: FileLocation;
+    let status: number | null;
+    let response: HttpConnectionInformation;
+    let request: HttpConnectionInformation;
+    /**
+     * decoding param: target
+     */
+    const __tmp1 = decodeTestURL(__d);
+    if(__tmp1 === null) return null;
+    target = __tmp1;
+    /**
+     * decoding param: result
+     */
+    const __tmp2 = decodeFileLocation(__d);
+    if(__tmp2 === null) return null;
+    result = __tmp2;
+    /**
+     * decoding param: status
+     */
+    if(__d.readUint8() === 1) {
+        status = __d.readUint16();
+    } else {
+        status = null;
+    }
+    /**
+     * decoding param: response
+     */
+    const __tmp5 = decodeHttpConnectionInformation(__d);
+    if(__tmp5 === null) return null;
+    response = __tmp5;
+    /**
+     * decoding param: request
+     */
+    const __tmp6 = decodeHttpConnectionInformation(__d);
+    if(__tmp6 === null) return null;
+    request = __tmp6;
+    return {
+        _name: 'main.IPHttpResult',
+        target,
+        result,
+        status,
+        response,
+        request
+    };
+}
+export function defaultIPHttpResult(params: Partial<IPHttpResultInputParams> = {}): IPHttpResult {
+    return IPHttpResult({
+        target: defaultTestURL(),
+        result: defaultFileLocation(),
+        status: null,
+        response: defaultHttpConnectionInformation(),
+        request: defaultHttpConnectionInformation(),
+        ...params
+    });
+}
+export function compareIPHttpResult(__a: IPHttpResult, __b: IPHttpResult): boolean {
+    return (
+        /**
+         * compare parameter target
+         */
+        compareTestURL(__a['target'],__b['target']) &&
+        /**
+         * compare parameter result
+         */
+        compareFileLocation(__a['result'],__b['result']) &&
+        /**
+         * compare parameter status
+         */
+        ((__dp21, __dp22) => __dp21 !== null && __dp22 !== null ? __dp21 === __dp22 : __dp21 === __dp22)(__a['status'],__b['status']) &&
+        /**
+         * compare parameter response
+         */
+        compareHttpConnectionInformation(__a['response'],__b['response']) &&
+        /**
+         * compare parameter request
+         */
+        compareHttpConnectionInformation(__a['request'],__b['request'])
+    );
+}
+export function updateIPHttpResult(value: IPHttpResult, changes: Partial<IPHttpResultInputParams>) {
+    if(typeof changes['target'] !== 'undefined') {
+        if(!(compareTestURL(changes['target'],value['target']))) {
+            value = IPHttpResult({
+                ...value,
+                target: changes['target'],
+            });
+        }
+    }
+    if(typeof changes['result'] !== 'undefined') {
+        if(!(compareFileLocation(changes['result'],value['result']))) {
+            value = IPHttpResult({
+                ...value,
+                result: changes['result'],
+            });
+        }
+    }
+    if(typeof changes['status'] !== 'undefined') {
+        if(!(((__dp31, __dp32) => __dp31 !== null && __dp32 !== null ? __dp31 === __dp32 : __dp31 === __dp32)(changes['status'],value['status']))) {
+            value = IPHttpResult({
+                ...value,
+                status: changes['status'],
+            });
+        }
+    }
+    if(typeof changes['response'] !== 'undefined') {
+        if(!(compareHttpConnectionInformation(changes['response'],value['response']))) {
+            value = IPHttpResult({
+                ...value,
+                response: changes['response'],
+            });
+        }
+    }
+    if(typeof changes['request'] !== 'undefined') {
+        if(!(compareHttpConnectionInformation(changes['request'],value['request']))) {
+            value = IPHttpResult({
+                ...value,
+                request: changes['request'],
+            });
+        }
+    }
+    return value;
+}
+export interface HttpConnectionInformation  {
+    _name: 'main.HttpConnectionInformation';
+    headers: ReadonlyMap<string, string>;
+}
+export function isHttpConnectionInformation(value: unknown): value is HttpConnectionInformation {
+    if(!(typeof value === 'object' && value !== null && '_name' in value && typeof value['_name'] === 'string' && value['_name'] === "main.HttpConnectionInformation")) return false;
+    if(!(
+        "headers" in value && ((__v0) => (__v0 instanceof Map && Array.from(__v0).every(([k,v]) => (typeof k === 'string' && typeof v === 'string'))))(value['headers'])
+    )) return false;
+    return true;
+}
+export interface HttpConnectionInformationInputParams {
+    headers: ReadonlyMap<string, string>;
+}
+export function HttpConnectionInformation(params: HttpConnectionInformationInputParams): HttpConnectionInformation {
+    return {
+        _name: 'main.HttpConnectionInformation',
+        headers: params['headers']
+    };
+}
+export function encodeHttpConnectionInformation(__s: ISerializer, value: HttpConnectionInformation) {
+    __s.writeInt32(459933033);
+    /**
+     * encoding param: headers
+     */
+    const __pv0 = value['headers'];
+    __s.writeUint32(__pv0.size);
+    for(const [__k1,__v1] of __pv0) {
+        __s.writeString(__k1);
+        __s.writeString(__v1);
+    }
+}
+export function decodeHttpConnectionInformation(__d: IDeserializer): HttpConnectionInformation | null {
+    const __id = __d.readInt32();
+    /**
+     * decode header
+     */
+    if(__id !== 459933033) return null;
+    let headers: Map<string, string>;
+    /**
+     * decoding param: headers
+     */
+    const __l1 = __d.readUint32();
+    const __o1 = new Map<string, string>();
+    headers = __o1;
+    let __k1: string;
+    let __v1: string;
+    for(let __i1 = 0; __i1 < __l1; __i1++) {
+        __k1 = __d.readString();
+        __v1 = __d.readString();
+        __o1.set(__k1, __v1);
+    }
+    return {
+        _name: 'main.HttpConnectionInformation',
+        headers
+    };
+}
+export function defaultHttpConnectionInformation(params: Partial<HttpConnectionInformationInputParams> = {}): HttpConnectionInformation {
+    return HttpConnectionInformation({
+        headers: new Map<string, string>(),
+        ...params
+    });
+}
+export function compareHttpConnectionInformation(__a: HttpConnectionInformation, __b: HttpConnectionInformation): boolean {
+    return (
+        /**
+         * compare parameter headers
+         */
+        ((l1,l2) => (l1.every(([k1,v1],i) => ((__v20 => typeof __v20 === 'undefined' ? false : k1 === __v20[0] && v1 === __v20[1])(l2[i])))))(Array.from(__a['headers']),Array.from(__b['headers']))
+    );
+}
+export function updateHttpConnectionInformation(value: HttpConnectionInformation, changes: Partial<HttpConnectionInformationInputParams>) {
+    if(typeof changes['headers'] !== 'undefined') {
+        if(!(((l1,l2) => (l1.every(([k1,v1],i) => ((__v21 => typeof __v21 === 'undefined' ? false : k1 === __v21[0] && v1 === __v21[1])(l2[i])))))(Array.from(changes['headers']),Array.from(value['headers'])))) {
+            value = HttpConnectionInformation({
+                ...value,
+                headers: changes['headers'],
+            });
+        }
+    }
+    return value;
+}
+export interface IPTestingResultFailure  {
+    _name: 'main.IPTestingResultFailure';
+    result: Readonly<IPHttpResult>;
+}
+export function isIPTestingResultFailure(value: unknown): value is IPTestingResultFailure {
+    if(!(typeof value === 'object' && value !== null && '_name' in value && typeof value['_name'] === 'string' && value['_name'] === "main.IPTestingResultFailure")) return false;
+    if(!(
+        "result" in value && ((__v0) => (isIPHttpResult(__v0)))(value['result'])
+    )) return false;
+    return true;
+}
+export interface IPTestingResultFailureInputParams {
+    result: Readonly<IPHttpResult>;
+}
+export function IPTestingResultFailure(params: IPTestingResultFailureInputParams): IPTestingResultFailure {
+    return {
+        _name: 'main.IPTestingResultFailure',
+        result: params['result']
+    };
+}
+export function encodeIPTestingResultFailure(__s: ISerializer, value: IPTestingResultFailure) {
+    __s.writeInt32(-154464973);
+    /**
+     * encoding param: result
+     */
+    const __pv0 = value['result'];
+    encodeIPHttpResult(__s,__pv0);
+}
+export function decodeIPTestingResultFailure(__d: IDeserializer): IPTestingResultFailure | null {
+    const __id = __d.readInt32();
+    /**
+     * decode header
+     */
+    if(__id !== -154464973) return null;
+    let result: IPHttpResult;
+    /**
+     * decoding param: result
+     */
+    const __tmp1 = decodeIPHttpResult(__d);
+    if(__tmp1 === null) return null;
+    result = __tmp1;
+    return {
+        _name: 'main.IPTestingResultFailure',
+        result
+    };
+}
+export function defaultIPTestingResultFailure(params: Partial<IPTestingResultFailureInputParams> = {}): IPTestingResultFailure {
+    return IPTestingResultFailure({
+        result: defaultIPHttpResult(),
+        ...params
+    });
+}
+export function compareIPTestingResultFailure(__a: IPTestingResultFailure, __b: IPTestingResultFailure): boolean {
+    return (
+        /**
+         * compare parameter result
+         */
+        compareIPHttpResult(__a['result'],__b['result'])
+    );
+}
+export function updateIPTestingResultFailure(value: IPTestingResultFailure, changes: Partial<IPTestingResultFailureInputParams>) {
+    if(typeof changes['result'] !== 'undefined') {
+        if(!(compareIPHttpResult(changes['result'],value['result']))) {
+            value = IPTestingResultFailure({
+                ...value,
+                result: changes['result'],
             });
         }
     }

@@ -1,54 +1,54 @@
-export trait FFmpegOriginalFileResult {
-
+export type IPReadingInformation {
+  uint32 byteOffset;
+  optional<TestURL> lastTarget;
 }
 
-export type FFmpegOriginalFileResultSuccess : FFmpegOriginalFileResult {
-  FileDigest digest;
-  // Original file path
-  string originalFile;
+export trait IPTestingResult {}
+
+export type IPTestingResultSuccess : IPTestingResult {
+  IPHttpResult result;
 }
 
-export type FFmpegOriginalFileResultFailure : FFmpegOriginalFileResult {
-  FileDigest digest;
-  // Original file path
-  string originalFile;
-  // Details about the error
-  string details;
+export type ProcessedExtractionTargetFileMetadata {
+  vector<Attribute> attributes;
 }
 
-export type FFmpegOriginalFileResultUnknown : FFmpegOriginalFileResult {
-  // Original file path
-  string originalFile;
-}
-
-export type FFmpegOriginalFileResultCorrupted : FFmpegOriginalFileResult {}
-
-export trait FFmpegEncodedFileResult {
-
-}
-
-export trait AudioCodec {}
-
-export type AudioCodecOpus : AudioCodec {}
-
-export type FFmpegEncodedFileResultSuccess : FFmpegEncodedFileResult {
-  FFmpegOriginalFileResult origin;
-  string outputFile;
-  string bitrate;
-  int sampleRate;
-  int channelCount;
-  AudioCodec audioCodec;
-}
-
-export type FFmpegEncodedFileResultFailure : FFmpegEncodedFileResult {
-  FFmpegOriginalFileResult origin;
-  string details;
-}
-
-export type FFmpegEncodedFileResultCorrupted : FFmpegEncodedFileResult {}
-
-export trait FileDigest {}
-
-export type FileDigestSHA1 : FileDigest {
+export type Attribute {
+  string name;
   string value;
+}
+
+export type ProcessedExtractionTargetFile {
+  FileLocation file;
+  ProcessedExtractionTargetFileMetadata metadata;
+}
+
+export type FileLocation {
+  // File location in the file system
+  string location;
+}
+
+export type TestURL {
+  string href;
+  string protocol;
+  string hostname;
+  optional<string> port;
+  string pathname;
+  map<string, string> search;
+}
+
+export type IPHttpResult {
+  TestURL target;
+  FileLocation result;
+  optional<uint16> status;
+  HttpConnectionInformation response;
+  HttpConnectionInformation request;
+}
+
+export type HttpConnectionInformation {
+  map<string, string> headers;
+}
+
+export type IPTestingResultFailure : IPTestingResult {
+  IPHttpResult result;
 }
