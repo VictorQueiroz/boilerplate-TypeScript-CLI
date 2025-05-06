@@ -29,7 +29,7 @@
     "cheerio": "^1.0.0",
     "cli-argument-helper": "^2.3.0",
     "filesize": "^10.1.6",
-    "glob": "^11.0.2",
+    "glob": "^9.3.5",
     "jsbuffer": "^2.0.12"
   }
 }

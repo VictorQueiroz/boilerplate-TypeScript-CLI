@@ -840,7 +840,7 @@ export function isIPHttpResult(value: unknown): value is IPHttpResult {
         "result" in value && ((__v1) => (isFileLocation(__v1)))(value['result'])
     )) return false;
     if(!(
-        "status" in value && ((__v2) => (__v2 === null ? true : ((x) => (typeof x === 'number' && JSBI.equal(JSBI.BigInt(x),JSBI.BigInt(x)) && JSBI.greaterThanOrEqual(JSBI.BigInt(x),JSBI.BigInt("0")) && JSBI.lessThanOrEqual(JSBI.BigInt(x),JSBI.BigInt("65535"))))(__v2)))(value['status'])
+        "status" in value && ((__v2) => (__v2 === null ? true : ((x) => (typeof x === 'number' && JSBI.equal(JSBI.BigInt(x),JSBI.BigInt(x)) && JSBI.greaterThanOrEqual(JSBI.BigInt(x),JSBI.BigInt("0")) && JSBI.lessThanOrEqual(JSBI.BigInt(x),JSBI.BigInt("4294967295"))))(__v2)))(value['status'])
     )) return false;
     if(!(
         "response" in value && ((__v4) => (isHttpConnectionInformation(__v4)))(value['response'])
@@ -887,7 +887,7 @@ export function encodeIPHttpResult(__s: ISerializer, value: IPHttpResult) {
         __s.writeUint8(0);
     } else {
         __s.writeUint8(1);
-        __s.writeUint16(__pv2);
+        __s.writeUint32(__pv2);
     }
     /**
      * encoding param: response
@@ -927,7 +927,7 @@ export function decodeIPHttpResult(__d: IDeserializer): IPHttpResult | null {
      * decoding param: status
      */
     if(__d.readUint8() === 1) {
-        status = __d.readUint16();
+        status = __d.readUint32();
     } else {
         status = null;
     }

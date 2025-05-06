@@ -1,14 +1,9 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "types": [
-      "node"
-    ]
+    "types": ["node"]
   },
   "references": [
-    {
-      "path": "../parser"
-    },
     {
       "path": "../schema"
     }

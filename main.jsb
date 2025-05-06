@@ -40,7 +40,7 @@ export type TestURL {
 export type IPHttpResult {
   TestURL target;
   FileLocation result;
-  optional<uint16> status;
+  optional<uint32> status;
   HttpConnectionInformation response;
   HttpConnectionInformation request;
 }
