@@ -3,6 +3,16 @@ import generateInternetProtocolAddress, {
   IP
 } from './generateInternetProtocolAddress';
 
+/**
+ * Removes duplicate generated IP addresses from `ipList`.
+ *
+ * The function performs a potentially infinite loop until the IP list does not contain the
+ * `existingIp` in it.
+ *
+ * @param existingIp Existing IP address we are trying to test again the items of `ipList`
+ * @param ipList List of {@link IP} to test for duplicates
+ * @param max Maximum value for each octet described in {@link IP}
+ */
 export default async function deduplicateInternetProtocolAddress(
   existingIp: string,
   ipList: IP[],

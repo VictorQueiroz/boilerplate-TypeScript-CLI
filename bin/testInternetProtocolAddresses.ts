@@ -18,7 +18,6 @@ import {
 } from '../schema/main.jsb';
 import configuration from './configuration';
 import createCodec from './createCodec';
-import generateInternetProtocolAddresses from './generateInternetProtocolAddresses';
 import isValidInteger from './isValidInteger';
 import readingInformationCodec from './readingInformation';
 
@@ -71,17 +70,18 @@ export default async function testInternetProtocolAddresses(
 
     // If there are no bytes in the file, generate a few IP addresses before start reading
     if (result.bytesRead < 1) {
-      console.log('Nothing to read...');
-      readingInfo = await generateInternetProtocolAddresses({
-        fd,
-        limit: 20,
-        max: null
-      });
-      assert.strict.ok(
-        (await fd.stat()).size > 0,
-        `Failed to fill "${configuration.ipListOutputFile}" with random IP addresses`
-      );
-      continue;
+      break;
+      // console.log('Nothing to read...');
+      // readingInfo = await generateInternetProtocolAddresses({
+      //   fd,
+      //   limit: 20,
+      //   max: null,
+      // });
+      // assert.strict.ok(
+      //   (await fd.stat()).size > 0,
+      //   `Failed to fill "${configuration.ipListOutputFile}" with random IP addresses`
+      // );
+      // continue;
     }
 
     let lineByteOffset = 0;
@@ -94,19 +94,20 @@ export default async function testInternetProtocolAddresses(
     }
 
     if (lineByteOffset === 0) {
-      console.log(
-        "Skipping empty line. We might've reached EOF: %o",
-        {
-          size: filesize((await fd.stat()).size),
-          readingInfo
-        }
-      );
-      readingInfo = await generateInternetProtocolAddresses({
-        fd,
-        limit: 100,
-        max: null
-      });
-      continue;
+      // console.log(
+      //   "Skipping empty line. We might've reached EOF: %o",
+      //   {
+      //     size: filesize((await fd.stat()).size),
+      //     readingInfo
+      //   }
+      // );
+      // readingInfo = await generateInternetProtocolAddresses({
+      //   fd,
+      //   limit: 100,
+      //   max: null
+      // });
+      // continue;
+      break;
     }
 
     let targetUrl: URL;

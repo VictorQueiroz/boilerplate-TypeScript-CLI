@@ -9,47 +9,12 @@ import generateInternetProtocolAddressesList from './generateInternetProtocolAdd
 import isValidInteger from './isValidInteger';
 import readingInformationCodec from './readingInformation';
 
-const iptvPaths: (
-  | string
-  | {
-    /**
-     * String that will be appended at the end of the final URL
-     */
-    trailing: string | null;
-    search: Record<string, string> | null;
-    pathname: string | null;
-  }
-  | null
-)[] = [
-    null
-    // { pathname: '/cgi-bin/snapshot.cgi', search: { chn: '1' }, trailing: null },
-    // { pathname: '/cgi-bin/config.cgi', search: { action: 'list' }, trailing: null },
-    // '/cgi-bin/get_params.cgi',
-    // '/cgi-bin/camera',
-    // '/webcapture.jpg',
-    // { pathname: '/axis-cgi/mjpg/video.cgi', search: { 'camera': '', 'resolution': '320x240' }, trailing: '&1746396937991' },
-    // { pathname: '/axis-cgi/mjpg/video.cgi', search: { 'camera': '', 'resolution': '320x240' }, trailing: null },
-    // { pathname: '/axis-cgi/mjpg/video.cgi', search: { 'camera': '', 'resolution': '640x480' }, trailing: null },
-    // { pathname: '/axis-cgi/mjpg/video.cgi', search: { 'camera': '' }, trailing: null },
-    // {
-    //   pathname: '/webcapture.jpg',
-    //   search: { 'command': 'snap', 'channel': '1' },
-    //   trailing: '?COUNTER'
-    // },
-    // { search: { 'action': 'stream' }, trailing: null, pathname: null },
-  ];
-
-const ports = [null, 8080, 83, 443, 80, 22];
-
-const protocols = [null, 'http', 'https'];
-
 const MAX_UINT8 = 255;
 
 const MAX_LINE_SIZE =
   MAX_UINT8 * 2; /* double the size supported by linux */
 
 export type InternetProtocolAddressMaximumInternetProtocolOctetValue =
-
   | number
   | [number]
   | [number, number]
@@ -60,8 +25,10 @@ export default async function generateInternetProtocolAddresses(options: {
   fd: fs.promises.FileHandle;
   limit: number;
   max: InternetProtocolAddressMaximumInternetProtocolOctetValue | null;
+  internetProtocolAddressBatchSize: number | null;
 }) {
   const { fd, limit } = options;
+  let { internetProtocolAddressBatchSize } = options;
 
   console.log('Generating %d IP combinations', limit);
 
@@ -90,169 +57,148 @@ export default async function generateInternetProtocolAddresses(options: {
     1
   );
 
-  for (const port of ports) {
-    for (const protocol of protocols) {
-      for (const pathname of iptvPaths) {
-        // Check for duplicates
+  /**
+   * Read offset of the entire file
+   */
+  let readOffset = 0;
 
-        /**
-         * Read offset of the entire file
-         */
-        let readOffset = 0;
+  /**
+   * Let's synchronize data before reading from the beginning
+   */
+  await fd.datasync();
 
-        /**
-         * Let's synchronize data before reading from the beginning
-         */
-        await fd.datasync();
+  /**
+   * If `internetProtocolAddressBatchSize` is not provided, use the default defined in the configuration
+   */
+  internetProtocolAddressBatchSize = internetProtocolAddressBatchSize ?? configuration.defaults.internetProtocolAddressBatchSize;
 
-        const textDecoder = new TextDecoder();
-        const ipList = await generateInternetProtocolAddressesList(
-          max,
-          20
-        );
-        const buffer = new Uint8Array(arrayBuffer);
+  const textDecoder = new TextDecoder();
 
-        console.log('Generated %d IP addresses', ipList.length);
+  const ipList = await generateInternetProtocolAddressesList(
+    max,
+    configuration.defaults.internetProtocolAddressBatchSize
+  );
 
-        assert.strict.ok(ipList.length > 0);
+  assert.strict.ok(ipList.length > 0, 'No IP addresses generated');
 
-        let result: fs.promises.FileReadResult<Uint8Array>;
+  const buffer = new Uint8Array(arrayBuffer);
 
-        let totalInternetProtocolAddressCount = 0;
+  console.log('Generated %d IP addresses', ipList.length);
 
-        do {
-          result = await fd.read(
-            buffer,
-            0,
-            arrayBuffer.byteLength,
-            readOffset
-          );
+  let result: fs.promises.FileReadResult<Uint8Array>;
 
-          if (result.bytesRead < 1) {
-            console.log('EOF');
-            continue;
-          }
+  let totalInternetProtocolAddressCount = 0;
 
-          let localBufferByteOffset = 0;
+  do {
+    /**
+     * Synchronize data before reading
+     */
+    await fd.datasync();
 
-          // Read the entire buffer
-          // while(readOffset < result.bytesRead) {
-          const startOffset = localBufferByteOffset;
+    /**
+     * Read data
+     */
+    result = await fd.read(
+      buffer,
+      0,
+      arrayBuffer.byteLength,
+      readOffset
+    );
 
-          // Read only until we find a line break. If there are remaining bytes that represent a line, they will be read in the next iteration.
-          while (
-            localBufferByteOffset !== result.bytesRead &&
-            buffer[localBufferByteOffset] !== CharacterCode.LineFeed
-          ) {
-            localBufferByteOffset++;
-          }
-
-          // Get the end offset before the line break
-          const endOffset = localBufferByteOffset;
-
-          // Remove additional line breaks
-          while (
-            localBufferByteOffset !== result.bytesRead &&
-            buffer[localBufferByteOffset] === CharacterCode.LineFeed
-          ) {
-            localBufferByteOffset++;
-          }
-
-          // Skip the amount we have read so far
-          readOffset += localBufferByteOffset;
-
-          // TODO: Check if it's a valid IP. If not, abort it, skip it, correct it, remove it, or ask the user which of those options he wants.
-          const existingIp = textDecoder.decode(
-            buffer.subarray(startOffset, endOffset)
-          );
-
-          if (existingIp.trim().length === 0) {
-            continue;
-          }
-
-          totalInternetProtocolAddressCount++;
-
-          await deduplicateInternetProtocolAddress(
-            existingIp,
-            ipList,
-            max
-          );
-        } while (result.bytesRead > 0);
-
-        // Make sure we read all the bytes of the file
-        assert.strict.ok(
-          readOffset === (await fd.stat()).size,
-          `Read offset "${readOffset}" is not equal to file size ${(await fd.stat()).size}. ` +
-          `The implementation should read the entire file in order to make sure there are no duplicates.`
-        );
-
-        // Iterate over the list that is guaranteed to be duplicate free
-        for (const generatedIp of ipList) {
-          const url = new URL(
-            `${protocol}://${generatedIp.join('.')}`
-          );
-          let trailing = '';
-
-          if (typeof pathname === 'string') {
-            url.pathname = pathname;
-          } else if (pathname !== null) {
-            if (pathname.trailing !== null) {
-              trailing = pathname.trailing;
-            }
-
-            if (pathname.pathname !== null) {
-              url.pathname = pathname.pathname;
-            }
-
-            if (pathname.search !== null) {
-              for (const [key, value] of Object.entries(
-                pathname.search
-              )) {
-                url.searchParams.set(key, value);
-              }
-            }
-
-            if (port !== null) {
-              url.port = port.toString();
-            }
-          }
-
-          // const encodedUrl = new TextEncoder().encode(`${encodeURI(url.href)}${trailing}\n`);
-
-          // Just put the IP address there. That is it. We can add the rest during runtime.
-          const encodedUrl = new TextEncoder().encode(
-            `${url.hostname}\n`
-          );
-
-          const writeResult = await fd.write(
-            encodedUrl,
-            0,
-            encodedUrl.byteLength,
-            readingInfo.byteOffset
-          );
-
-          assert.strict.ok(
-            writeResult.bytesWritten === encodedUrl.byteLength,
-            `Expected to write ${encodedUrl.byteLength} bytes, ` +
-            `but only wrote ${writeResult.bytesWritten}.`
-          );
-
-          bytesWrittenCount += writeResult.bytesWritten;
-        }
-
-        console.log(
-          'Added new %d IP addresses: %s',
-          ipList.length,
-          ipList.map(ip => ip.join('.')).join(', ')
-        );
-        console.log()
-
-        console.log('Read %d IP addresses', totalInternetProtocolAddressCount);
-
-        totalInternetProtocolAddressCount = 0;
-      }
+    /**
+     * If nothing was read, let the loop continue
+     */
+    if (result.bytesRead < 1) {
+      continue;
     }
+
+    let localBufferByteOffset = 0;
+
+    // Read the entire buffer
+    // while(readOffset < result.bytesRead) {
+    const startOffset = localBufferByteOffset;
+
+    // Read only until we find a line break. If there are remaining bytes that represent a line, they will be read in the next iteration.
+    while (
+      localBufferByteOffset !== result.bytesRead &&
+      buffer[localBufferByteOffset] !== CharacterCode.LineFeed
+    ) {
+      localBufferByteOffset++;
+    }
+
+    // Get the end offset before the line break
+    const endOffset = localBufferByteOffset;
+
+    // Remove additional line breaks
+    while (
+      localBufferByteOffset !== result.bytesRead &&
+      buffer[localBufferByteOffset] === CharacterCode.LineFeed
+    ) {
+      localBufferByteOffset++;
+    }
+
+    // Skip the amount we have read so far
+    readOffset += localBufferByteOffset;
+
+    // TODO: Check if it's a valid IP. If not, abort it, skip it, correct it, remove it, or ask the user which of those options he wants.
+    const existingIp = textDecoder.decode(
+      buffer.subarray(startOffset, endOffset)
+    );
+
+    if (existingIp.trim().length === 0) {
+      continue;
+    }
+
+    totalInternetProtocolAddressCount++;
+
+    await deduplicateInternetProtocolAddress(
+      existingIp,
+      ipList,
+      max
+    );
+  } while (result.bytesRead > 0);
+
+  // Make sure we read all the bytes of the file
+  assert.strict.ok(
+    readOffset === (await fd.stat()).size,
+    `Read offset "${readOffset}" is not equal to file size ${(await fd.stat()).size}. ` +
+    `The implementation should read the entire file in order to make sure there are no duplicates.`
+  );
+
+  // Iterate over the list that is guaranteed to be duplicate free
+  for (const generatedIp of ipList) {
+    // Just put the IP address there. That is it. We can add the rest during runtime.
+    const encodedUrl = new TextEncoder().encode(
+      `${generatedIp.join('.')}\n`
+    );
+
+    const writeResult = await fd.write(
+      encodedUrl,
+      0,
+      encodedUrl.byteLength,
+      readingInfo.byteOffset
+    );
+
+    assert.strict.ok(
+      writeResult.bytesWritten === encodedUrl.byteLength,
+      `Expected to write ${encodedUrl.byteLength} bytes, ` +
+      `but only wrote ${writeResult.bytesWritten}.`
+    );
+
+    bytesWrittenCount += writeResult.bytesWritten;
   }
+
+  console.log(
+    'Added new %d IP addresses: %s',
+    ipList.length,
+    ipList.map(ip => ip.join('.')).join(', ')
+  );
+  console.log()
+
+  console.log('Read %d IP addresses', totalInternetProtocolAddressCount);
+
+  totalInternetProtocolAddressCount = 0;
+
 
   assert.strict.ok(
     isValidInteger(limit),
@@ -288,6 +234,7 @@ export default async function generateInternetProtocolAddresses(options: {
   return generateInternetProtocolAddresses({
     fd,
     limit: limit - 1,
+    internetProtocolAddressBatchSize,
     max
   });
 }
